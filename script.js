@@ -57,14 +57,22 @@ function loadMedals() {
         });
 }
 
-// 🔹 Crear controles de búsqueda y filtro
+// 🔹 Crear controles de búsqueda y filtro (centrados)
 function createFilterControls() {
+    // Evitar duplicados
+    if (document.getElementById('filterControls')) return;
+
     const container = document.getElementById('medallasList');
 
     const filterDiv = document.createElement('div');
+    filterDiv.id = 'filterControls';
     filterDiv.style.marginBottom = '1rem';
+    filterDiv.style.display = 'flex';
+    filterDiv.style.justifyContent = 'center'; // centrado horizontal
+    filterDiv.style.alignItems = 'center';     // centrado vertical
+    filterDiv.style.gap = '1rem';
     filterDiv.innerHTML = `
-        <input type="text" id="medalSearch" placeholder="Buscar medalla..." style="margin-right:1rem;">
+        <input type="text" id="medalSearch" placeholder="Buscar medalla...">
         <select id="medalRarity">
             <option value="">Todas las rarezas</option>
         </select>
@@ -131,7 +139,7 @@ function renderMedals(medals) {
     });
 }
 
-// 🔹 Cargar perfil de usuario (igual que antes)
+// 🔹 Cargar perfil de usuario
 function loadUserProfile() {
     const params = new URLSearchParams(window.location.search);
     const user = params.get('user');
