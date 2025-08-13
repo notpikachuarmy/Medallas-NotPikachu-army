@@ -1,67 +1,78 @@
 body {
+    background-color: #0f0f0f;
+    color: #fff;
     font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
     margin: 0;
     padding: 0;
 }
 
 header {
-    background-color: #4CAF50;
-    color: white;
-    text-align: center;
-    padding: 1rem 0;
-}
-
-.container {
-    max-width: 900px;
-    margin: 2rem auto;
     padding: 1rem;
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-h1, h2 {
-    margin-top: 0;
-}
-
-.avatar {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    border: 3px solid #4CAF50;
-    margin-bottom: 1rem;
-}
-
-.medallas {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-/* Medallas */
-.medalla {
-    border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    padding: 0.5rem;
-    width: 120px;
+    background-color: #1a1a1a;
     text-align: center;
-    color: #333;
-    font-weight: bold;
-    border: 3px solid white; /* borde por defecto */
-    background-color: white; /* fondo blanco */
+}
+
+input {
+    padding: 0.5rem;
+    width: 60%;
+    border: none;
+    border-radius: 5px;
+}
+
+.medalla {
+    display: flex;
+    align-items: center;
+    margin: 1rem;
+    background-color: #1e1e1e;
+    padding: 1rem;
+    border-radius: 10px;
 }
 
 .medalla img {
     width: 80px;
     height: 80px;
-    border-radius: 50%;
-    margin-bottom: 0.3rem;
+    margin-right: 1rem;
 }
 
-/* Bordes por rareza */
-.medalla.S { border-color: white; }
-.medalla.R { border-color: #FFEB3B; }     /* amarillo */
-.medalla.SR { border-color: #FF9800; }    /* naranja */
-.medalla.SSR { border-color: #F44336; }   /* rojo */
-.medalla.UR { border-color: #9C27B0; }    /* morado */
+.S { box-shadow: 0 0 10px white; }
+.R { box-shadow: 0 0 10px yellow; }
+.SR { box-shadow: 0 0 10px orange; }
+.SSR { box-shadow: 0 0 10px red; }
+.UR { box-shadow: 0 0 10px purple; }
+
+/* Centrar y alinear listas de medallas (tanto globales como de usuario) */
+#medallasList,
+#userMedals {
+    display: flex;
+    flex-wrap: wrap;          /* que bajen en filas */
+    justify-content: center;  /* centrado horizontal */
+    gap: 20px;                /* espacio entre tarjetas */
+    max-width: 1000px;        /* MISMO ancho para ambos contenedores */
+    margin: 0 auto;           /* centra el bloque en la página */
+    padding: 20px 16px;       /* mismo padding para ambos */
+    box-sizing: border-box;
+}
+
+/* Si quieres que todas las tarjetas tengan el mismo ancho para que “empiecen y terminen” alineadas */
+.medalla {
+    width: 320px;             /* ajusta al gusto (260–360px suele ir bien) */
+}
+
+/* (Opcional) Imagen consistente dentro de la tarjeta */
+.medalla img {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+}
+
+
+.search-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.search-container input {
+    width: 60%;
+    max-width: 400px;
+}
