@@ -8,19 +8,16 @@
 <body>
     <header>
         <h1>Vitrina de Medallas</h1>
-        <input type="text" id="searchUser" placeholder="Buscar usuario...">
+        <!-- Solo buscador de usuarios -->
+        <div class="search-container">
+            <input type="text" id="searchUser" placeholder="Buscar usuario...">
+        </div>
     </header>
 
-    <!-- Buscador de medallas centrado -->
-    <div class="search-container">
-        <input type="text" id="searchMedal" placeholder="Buscar medalla...">
-    </div>
-
     <main id="medallasList">
-        <!-- Aquí se cargarán las medallas -->
+        <!-- Aquí se cargarán las medallas (y se generará el buscador + filtro por JS) -->
     </main>
     
     <script src="script.js"></script>
 </body>
 </html>
-
