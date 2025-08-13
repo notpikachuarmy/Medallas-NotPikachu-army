@@ -2,25 +2,35 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Medallas - Lista y Buscador</title>
+    <title>Vitrina de Medallas</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
         <h1>Vitrina de Medallas</h1>
+        <input type="text" id="searchUser" placeholder="Buscar usuario...">
     </header>
 
     <div class="search-container">
-        <input type="text" id="medalSearch" placeholder="Buscar medalla...">
+        <input type="text" id="searchMedal" placeholder="Buscar medalla...">
         <select id="medalRarity">
             <option value="">Todas las rarezas</option>
+            <option value="blanco">Blanco</option>
+            <option value="amarillo">Amarillo</option>
+            <option value="naranja">Naranja</option>
+            <option value="rojo">Rojo</option>
+            <option value="morado">Morado</option>
         </select>
     </div>
 
-    <main id="medallasList"></main>
+    <main id="medallasList">
+        <!-- Medallas cargadas aquí -->
+    </main>
 
-    <h2>Top 3 usuarios con más medallas</h2>
-    <div id="topUsers"></div>
+    <section id="topUsers">
+        <h2>Top 3 Usuarios</h2>
+        <div id="topUsersList"></div>
+    </section>
 
     <script src="script.js"></script>
 </body>
