@@ -11,6 +11,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// 🔹 Función para corregir enlaces de Imgur
+function fixImgurLink(url) {
+    if (url.includes("imgur.com") && !url.includes("i.imgur.com")) {
+        let id = url.split("/").pop().split(".")[0];
+        return `https://i.imgur.com/${id}.png`;
+    }
+    return url.trim();
+}
+
 // 🔹 Cargar todas las medallas
 function loadMedals() {
     const container = document.getElementById('medallasList');
@@ -22,24 +31,30 @@ function loadMedals() {
             const rows = data.split('\n').map(row => row.split(','));
             container.innerHTML = ''; // Limpiar
 
-            // Asumimos que la primera fila es [Nombre, ImagenURL]
             for (let i = 1; i < rows.length; i++) {
-                const [nombre, imagen] = rows[i];
-                if (!nombre || !imagen) continue;
+                const [id, nombre, rareza, imagenURL, descripcion] = rows[i];
+                if (!nombre || !imagenURL) continue;
 
                 const item = document.createElement('div');
                 item.classList.add('medalla');
+                if (rareza) item.classList.add(rareza.trim()); // Añadir clase según rareza
 
                 const img = document.createElement('img');
-                img.src = imagen.trim();
+                img.src = fixImgurLink(imagenURL);
                 img.alt = nombre;
                 img.classList.add('medalla-img');
 
-                const text = document.createElement('span');
-                text.textContent = nombre;
+                const info = document.createElement('div');
+                const title = document.createElement('strong');
+                title.textContent = nombre;
+                const desc = document.createElement('p');
+                desc.textContent = descripcion || '';
+
+                info.appendChild(title);
+                info.appendChild(desc);
 
                 item.appendChild(img);
-                item.appendChild(text);
+                item.appendChild(info);
                 container.appendChild(item);
             }
         })
@@ -58,7 +73,6 @@ function loadUserProfile() {
     const container = document.getElementById('userMedals');
     container.innerHTML = '<p>Cargando medallas...</p>';
 
-    // Cargar relación usuarios-medallas
     Promise.all([
         fetch(MEDALS_SHEET_URL).then(res => res.text()),
         fetch(USERS_SHEET_URL).then(res => res.text())
@@ -66,7 +80,7 @@ function loadUserProfile() {
         const medalRows = medalsData.split('\n').map(r => r.split(','));
         const userRows = usersData.split('\n').map(r => r.split(','));
 
-        // Buscar medallas de este usuario
+        // Buscar IDs de medallas del usuario
         const userMedalsIDs = [];
         for (let i = 1; i < userRows.length; i++) {
             const [username, medalID] = userRows[i];
@@ -77,25 +91,31 @@ function loadUserProfile() {
 
         container.innerHTML = ''; // Limpiar
 
-        // Mostrar solo las medallas de este usuario
         for (let i = 1; i < medalRows.length; i++) {
-            const [nombre, imagen, id] = medalRows[i];
-            if (!nombre || !imagen || !id) continue;
+            const [id, nombre, rareza, imagenURL, descripcion] = medalRows[i];
+            if (!nombre || !imagenURL || !id) continue;
 
             if (userMedalsIDs.includes(id.trim())) {
                 const item = document.createElement('div');
                 item.classList.add('medalla');
+                if (rareza) item.classList.add(rareza.trim());
 
                 const img = document.createElement('img');
-                img.src = imagen.trim();
+                img.src = fixImgurLink(imagenURL);
                 img.alt = nombre;
                 img.classList.add('medalla-img');
 
-                const text = document.createElement('span');
-                text.textContent = nombre;
+                const info = document.createElement('div');
+                const title = document.createElement('strong');
+                title.textContent = nombre;
+                const desc = document.createElement('p');
+                desc.textContent = descripcion || '';
+
+                info.appendChild(title);
+                info.appendChild(desc);
 
                 item.appendChild(img);
-                item.appendChild(text);
+                item.appendChild(info);
                 container.appendChild(item);
             }
         }
