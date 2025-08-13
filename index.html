@@ -2,22 +2,24 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Medallas - Lista y Buscador</title>
+    <title>Medallas - Inicio</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
-        <h1>Vitrina de Medallas</h1>
-        <!-- Solo buscador de usuarios -->
-        <div class="search-container">
-            <input type="text" id="searchUser" placeholder="Buscar usuario...">
-        </div>
+        <h1>Medallas de Usuarios</h1>
     </header>
 
-    <main id="medallasList">
-        <!-- Aquí se cargarán las medallas (y se generará el buscador + filtro por JS) -->
-    </main>
-    
+    <section id="userSearch">
+        <input type="text" id="searchInput" placeholder="Buscar usuario...">
+        <button id="searchBtn">Buscar</button>
+    </section>
+
+    <section id="topUsers">
+        <h2>Top 3 Usuarios con más medallas</h2>
+        <div id="topUsersList"></div>
+    </section>
+
     <script src="script.js"></script>
 </body>
 </html>
