@@ -1,33 +1,14 @@
 // 🔹 Enlaces a tus Google Sheets en formato CSV
 const MEDALS_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1uxeXCUyWi2kLAWEGJjZ91zutr18sr7_QjHqxfPVzgCA/export?format=csv&gid=0';
-const USERS_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1Pri9HhHGipD08e847iUKruXPLzG9tWki3N5rQPu2cMw/export?format=csv&gid=0';
+const USERS_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1Pri9HhHGipD08e847iUKruXPLzG9tZ5NQhQPu2cMw/export?format=csv&gid=0';
 
 let allMedals = [];
 
 // 🔹 Carga inicial
 document.addEventListener('DOMContentLoaded', () => {
-    if (document.getElementById('medalsContainer')) {
-        loadMedals();
-    }
-    if (document.getElementById('userMedals')) {
-        loadUserProfile();
-    }
+    if (document.getElementById('medalsContainer')) loadMedals();
+    if (document.getElementById('userMedals')) loadUserProfile();
 });
-
-// 🔹 Función para arreglar enlaces de Imgur
-function fixImgurLink(url) {
-    url = url.trim();
-    if (!url) return '';
-    if (url.includes("imgur.com/a/") || url.includes("imgur.com/gallery/")) {
-        let id = url.split("/").pop();
-        return `https://i.imgur.com/${id}.png`;
-    }
-    if (url.includes("imgur.com") && !url.includes("i.imgur.com")) {
-        let id = url.split("/").pop().split(".")[0];
-        return `https://i.imgur.com/${id}.png`;
-    }
-    return url;
-}
 
 // 🔹 Cargar todas las medallas
 function loadMedals() {
@@ -42,7 +23,7 @@ function loadMedals() {
                 id: r[0]?.trim(),
                 nombre: r[1]?.trim(),
                 rareza: r[2]?.trim(),
-                imagenURL: fixImgurLink(r[3]?.trim()),
+                imagenURL: r[3]?.trim(),
                 descripcion: r[4]?.trim()
             })).filter(m => m.nombre && m.imagenURL);
 
@@ -114,6 +95,7 @@ function renderMedals(medals, container) {
     medals.forEach(({nombre, rareza, imagenURL, descripcion}) => {
         const item = document.createElement('div');
         item.className = 'medalla';
+        item.classList.add(`rareza-${rareza}`); // Clase para el borde
 
         const img = document.createElement('img');
         img.src = imagenURL;
@@ -152,7 +134,7 @@ function loadUserProfile() {
             id: r[0]?.trim(),
             nombre: r[1]?.trim(),
             rareza: r[2]?.trim(),
-            imagenURL: fixImgurLink(r[3]?.trim()),
+            imagenURL: r[3]?.trim(),
             descripcion: r[4]?.trim()
         })).filter(m => m.nombre && m.imagenURL);
 
@@ -205,4 +187,3 @@ function loadUserProfile() {
         container.innerHTML = '<p>Error cargando perfil</p>';
     });
 }
-
