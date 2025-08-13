@@ -59,7 +59,6 @@ function loadMedals() {
 
 // 🔹 Crear controles de búsqueda y filtro (centrados)
 function createFilterControls() {
-    // Evitar duplicados
     if (document.getElementById('filterControls')) return;
 
     const container = document.getElementById('medallasList');
@@ -68,8 +67,8 @@ function createFilterControls() {
     filterDiv.id = 'filterControls';
     filterDiv.style.marginBottom = '1rem';
     filterDiv.style.display = 'flex';
-    filterDiv.style.justifyContent = 'center'; // centrado horizontal
-    filterDiv.style.alignItems = 'center';     // centrado vertical
+    filterDiv.style.justifyContent = 'center';
+    filterDiv.style.alignItems = 'center';
     filterDiv.style.gap = '1rem';
     filterDiv.innerHTML = `
         <input type="text" id="medalSearch" placeholder="Buscar medalla...">
@@ -156,14 +155,31 @@ function loadUserProfile() {
         const userRows = usersData.split('\n').map(r => r.split(','));
 
         const userMedalsIDs = [];
+        let userAvatar = '';
+
         for (let i = 1; i < userRows.length; i++) {
-            const [username, medalID] = userRows[i];
-            if (username && medalID && username.trim().toLowerCase() === (user || '').toLowerCase()) {
-                userMedalsIDs.push(medalID.trim());
+            const [discordID, username, avatarURL, medalsStr] = userRows[i];
+            if (!username || !medalsStr) continue;
+            if (username.trim().toLowerCase() === (user || '').toLowerCase()) {
+                userAvatar = avatarURL?.trim() || '';
+                medalsStr.split(',').forEach(medalID => userMedalsIDs.push(medalID.trim()));
             }
         }
 
         container.innerHTML = '';
+
+        // Mostrar avatar si existe
+        if (userAvatar) {
+            const avatarImg = document.createElement('img');
+            avatarImg.src = userAvatar;
+            avatarImg.alt = user || 'Usuario';
+            avatarImg.style.width = '100px';
+            avatarImg.style.height = '100px';
+            avatarImg.style.borderRadius = '50%';
+            avatarImg.style.display = 'block';
+            avatarImg.style.margin = '0 auto 1rem auto';
+            container.appendChild(avatarImg);
+        }
 
         for (let i = 1; i < medalRows.length; i++) {
             const [id, nombre, rareza, imagenURL, descripcion] = medalRows[i];
