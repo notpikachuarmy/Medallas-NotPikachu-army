@@ -9,28 +9,37 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('userMedals')) loadUserProfile();
 });
 
-function fetchCSV(url) {
-    return fetch(url).then(res => res.text());
-}
-
+// --- Parse CSV robusto ---
 function parseCSV(data) {
-    return data.split('\n').map(row => row.split(','));
+    const pattern = /(?:\"([^\"]*(?:\"\"[^\"]*)*)\"|([^,\n]+)|)(?:,|$)/g;
+    const rows = [];
+    let row = [];
+    let match;
+    while ((match = pattern.exec(data))) {
+        let value = match[1] ? match[1].replace(/""/g, '"') : (match[2] || '');
+        row.push(value.trim());
+        if (data[pattern.lastIndex - 1] === '\n' || pattern.lastIndex === data.length) {
+            rows.push(row);
+            row = [];
+        }
+    }
+    return rows;
 }
 
-// --- Cargar medallas ---
+// --- Cargar medallas y usuarios ---
 async function loadMedals() {
     const container = document.getElementById('medallasList');
     container.innerHTML = '<p>Cargando medallas...</p>';
 
     try {
-        const [medalsCSV, usersCSV] = await Promise.all([fetchCSV(MEDALS_SHEET_URL), fetchCSV(USERS_SHEET_URL)]);
+        const [medalsCSV, usersCSV] = await Promise.all([fetch(MEDALS_SHEET_URL).then(r=>r.text()), fetch(USERS_SHEET_URL).then(r=>r.text())]);
         const medalRows = parseCSV(medalsCSV);
         const userRows = parseCSV(usersCSV);
 
         allMedals = medalRows.slice(1).map(r => ({
             id: r[0]?.trim(),
             nombre: r[1]?.trim(),
-            rareza: r[2]?.trim().toLowerCase(),
+            rareza: r[2]?.trim().toUpperCase(), // S, C, R, SR, SSR, UR
             imagenURL: r[3]?.trim(),
             descripcion: r[4]?.trim()
         }));
@@ -39,7 +48,7 @@ async function loadMedals() {
             id: r[0]?.trim(),
             nombre: r[1]?.trim(),
             avatar: r[2]?.trim(),
-            medallas: r[3]?.trim().split('|').map(x => x.trim())
+            medallas: r[3]?.trim() ? r[3].split(',').map(x=>x.trim()) : []
         }));
 
         renderMedals(allMedals);
@@ -104,12 +113,7 @@ function renderTopUsers() {
     top.forEach(u => {
         const div = document.createElement('div');
         div.className = 'top-user';
-        const counts = {blanco:0, amarillo:0, naranja:0, rojo:0, morado:0};
-        u.medallas.forEach(mid => {
-            const medal = allMedals.find(m=>m.id===mid);
-            if (medal) counts[medal.rareza] = (counts[medal.rareza] || 0) + 1;
-        });
-        div.innerHTML = `<strong>${u.nombre}</strong> - Total: ${u.medallas.length} [Blanco:${counts.blanco} Amarillo:${counts.amarillo} Naranja:${counts.naranja} Rojo:${counts.rojo} Morado:${counts.morado}]`;
+        div.innerHTML = `<strong>${u.nombre}</strong> - Total: ${u.medallas.length}`;
         topContainer.appendChild(div);
     });
 }
@@ -121,14 +125,14 @@ async function loadUserProfile() {
     if (!userName) return;
 
     try {
-        const [medalsCSV, usersCSV] = await Promise.all([fetchCSV(MEDALS_SHEET_URL), fetchCSV(USERS_SHEET_URL)]);
+        const [medalsCSV, usersCSV] = await Promise.all([fetch(MEDALS_SHEET_URL).then(r=>r.text()), fetch(USERS_SHEET_URL).then(r=>r.text())]);
         const medalRows = parseCSV(medalsCSV);
         const userRows = parseCSV(usersCSV);
 
         allMedals = medalRows.slice(1).map(r => ({
             id: r[0]?.trim(),
             nombre: r[1]?.trim(),
-            rareza: r[2]?.trim().toLowerCase(),
+            rareza: r[2]?.trim().toUpperCase(),
             imagenURL: r[3]?.trim(),
             descripcion: r[4]?.trim()
         }));
@@ -137,7 +141,7 @@ async function loadUserProfile() {
             id: r[0]?.trim(),
             nombre: r[1]?.trim(),
             avatar: r[2]?.trim(),
-            medallas: r[3]?.trim().split('|').map(x=>x.trim())
+            medallas: r[3]?.trim() ? r[3].split(',').map(x=>x.trim()) : []
         }));
 
         const user = allUsers.find(u => u.nombre.toLowerCase() === userName.toLowerCase());
@@ -149,8 +153,7 @@ async function loadUserProfile() {
         const container = document.getElementById('userMedals');
         container.innerHTML = '';
 
-        // Ordenar medallas de más rara a menos
-        const rarityOrder = ['morado','rojo','naranja','amarillo','blanco'];
+        const rarityOrder = ['UR','SSR','SR','R','C','S']; // de más rara a menos
         const userMedalsSorted = user.medallas
             .map(mid => allMedals.find(m=>m.id===mid))
             .filter(Boolean)
