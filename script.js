@@ -1,6 +1,6 @@
 // 🔹 Pega aquí tus enlaces de Google Sheets en formato CSV
-const MEDALS_SHEET_URL = 'https://example.com/medals.csv';
-const USERS_SHEET_URL = 'https://example.com/users.csv';
+const MEDALS_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1uxeXCUyWi2kLAWEGJjZ91zutr18sr7_QjHqxfPVzgCA/export?format=csv&gid=0';
+const USERS_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1Pri9HhHGipD08e847iUKruXPLzG9tWki3N5rQPu2cMw/export?format=csv&gid=0';
 
 document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('medallasList')) {
