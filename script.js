@@ -1,204 +1,100 @@
-// 🔹 Pega aquí tus enlaces de Google Sheets en formato CSV
-const MEDALS_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1uxeXCUyWi2kLAWEGJjZ91zutr18sr7_QjHqxfPVzgCA/export?format=csv&gid=0';
-const USERS_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1Pri9HhHGipD08e847iUKruXPLzG9tWki3N5rQPu2cMw/export?format=csv&gid=0';
+// 🔹 URLs de datos
+const MEDALS_URL = 'https://docs.google.com/spreadsheets/d/1uxeXCUyWi2kLAWEGJjZ91zutr18sr7_QjHqxfPVzgCA/export?format=csv&gid=0';
+const USERS_URL = 'https://docs.google.com/spreadsheets/d/TU_ID_HOJA/export?format=csv';
 
-let allMedals = []; // Para almacenar todas las medallas cargadas
+// 🔹 Variables globales
+let allMedals = [];
+let allUsers = [];
+const rarityOrder = ['UR','SSR','SR','R','S'];
 
+// 🔹 Inicialización al cargar la página
 document.addEventListener('DOMContentLoaded', () => {
-    if (document.getElementById('medallasList')) {
-        loadMedals();
-    }
-    if (document.getElementById('userMedals')) {
-        loadUserProfile();
-    }
+    if (document.getElementById('userProfile')) loadUserProfile();
 });
 
-// 🔹 Función para corregir enlaces de Imgur (álbumes y galerías)
-function fixImgurLink(url) {
-    url = url.trim();
-    if (url.includes("imgur.com/a/") || url.includes("imgur.com/gallery/")) {
-        let id = url.split("/").pop();
-        return `https://i.imgur.com/${id}.png`;
+// 🔹 Parse CSV simple
+function parseCSV(data) {
+    const rows = [];
+    const lines = data.trim().split('\n');
+    for (let line of lines) {
+        const cells = [];
+        let current='', inQuotes=false;
+        for (let char of line) {
+            if (char === '"' && !inQuotes) { inQuotes=true; continue; }
+            if (char === '"' && inQuotes) { inQuotes=false; continue; }
+            if (char === ',' && !inQuotes) { cells.push(current); current=''; continue; }
+            current+=char;
+        }
+        cells.push(current);
+        rows.push(cells);
     }
-    if (url.includes("imgur.com") && !url.includes("i.imgur.com")) {
-        let id = url.split("/").pop().split(".")[0];
-        return `https://i.imgur.com/${id}.png`;
-    }
-    return url;
-}
-
-// 🔹 Cargar todas las medallas
-function loadMedals() {
-    const container = document.getElementById('medallasList');
-    container.innerHTML = '<p>Cargando medallas...</p>';
-
-    fetch(MEDALS_SHEET_URL)
-        .then(response => response.text())
-        .then(data => {
-            const rows = data.split('\n').map(row => row.split(','));
-            allMedals = rows.slice(1).map(r => ({
-                id: r[0]?.trim(),
-                nombre: r[1]?.trim(),
-                rareza: r[2]?.trim(),
-                imagenURL: fixImgurLink(r[3]?.trim()),
-                descripcion: r[4]?.trim()
-            })).filter(m => m.nombre && m.imagenURL);
-
-            container.innerHTML = '';
-
-            // Crear buscador y filtro de rareza
-            createFilterControls();
-
-            renderMedals(allMedals);
-        })
-        .catch(error => {
-            console.error('Error cargando medallas:', error);
-            container.innerHTML = '<p>Error cargando medallas</p>';
-        });
-}
-
-// 🔹 Crear controles de búsqueda y filtro (centrados)
-function createFilterControls() {
-    // Evitar duplicados
-    if (document.getElementById('filterControls')) return;
-
-    const container = document.getElementById('medallasList');
-
-    const filterDiv = document.createElement('div');
-    filterDiv.id = 'filterControls';
-    filterDiv.style.marginBottom = '1rem';
-    filterDiv.style.display = 'flex';
-    filterDiv.style.justifyContent = 'center'; // centrado horizontal
-    filterDiv.style.alignItems = 'center';     // centrado vertical
-    filterDiv.style.gap = '1rem';
-    filterDiv.innerHTML = `
-        <input type="text" id="medalSearch" placeholder="Buscar medalla...">
-        <select id="medalRarity">
-            <option value="">Todas las rarezas</option>
-        </select>
-    `;
-    container.parentNode.insertBefore(filterDiv, container);
-
-    const raritySet = new Set(allMedals.map(m => m.rareza).filter(Boolean));
-    const raritySelect = filterDiv.querySelector('#medalRarity');
-    raritySet.forEach(r => {
-        const option = document.createElement('option');
-        option.value = r;
-        option.textContent = r;
-        raritySelect.appendChild(option);
-    });
-
-    document.getElementById('medalSearch').addEventListener('input', applyFilters);
-    document.getElementById('medalRarity').addEventListener('change', applyFilters);
-}
-
-// 🔹 Aplicar filtros y renderizar
-function applyFilters() {
-    const search = document.getElementById('medalSearch').value.toLowerCase();
-    const rarity = document.getElementById('medalRarity').value;
-
-    const filtered = allMedals.filter(m => 
-        (!rarity || m.rareza === rarity) &&
-        (!search || m.nombre.toLowerCase().includes(search))
-    );
-
-    renderMedals(filtered);
-}
-
-// 🔹 Renderizar medallas
-function renderMedals(medals) {
-    const container = document.getElementById('medallasList');
-    container.innerHTML = '';
-    if (medals.length === 0) {
-        container.innerHTML = '<p>No se encontraron medallas.</p>';
-        return;
-    }
-
-    medals.forEach(({id, nombre, rareza, imagenURL, descripcion}) => {
-        const item = document.createElement('div');
-        item.classList.add('medalla');
-        if (rareza) item.classList.add(rareza);
-
-        const img = document.createElement('img');
-        img.src = imagenURL;
-        img.alt = nombre;
-        img.classList.add('medalla-img');
-
-        const info = document.createElement('div');
-        const title = document.createElement('strong');
-        title.textContent = nombre;
-        const desc = document.createElement('p');
-        desc.textContent = descripcion || '';
-
-        info.appendChild(title);
-        info.appendChild(desc);
-
-        item.appendChild(img);
-        item.appendChild(info);
-        container.appendChild(item);
-    });
+    return rows;
 }
 
 // 🔹 Cargar perfil de usuario
-function loadUserProfile() {
+async function loadUserProfile() {
     const params = new URLSearchParams(window.location.search);
-    const user = params.get('user');
-    document.getElementById('username').textContent = user || 'Usuario';
+    const usernameParam = params.get('user'); // nombre de usuario buscado
+    const container = document.getElementById('userProfile');
+    container.innerHTML = '<p>Cargando perfil...</p>';
 
-    const container = document.getElementById('userMedals');
-    container.innerHTML = '<p>Cargando medallas...</p>';
+    try {
+        const [medRes, userRes] = await Promise.all([fetch(MEDALS_URL), fetch(USERS_URL)]);
+        const medData = parseCSV(await medRes.text());
+        const userData = parseCSV(await userRes.text());
 
-    Promise.all([
-        fetch(MEDALS_SHEET_URL).then(res => res.text()),
-        fetch(USERS_SHEET_URL).then(res => res.text())
-    ]).then(([medalsData, usersData]) => {
-        const medalRows = medalsData.split('\n').map(r => r.split(','));
-        const userRows = usersData.split('\n').map(r => r.split(','));
+        // Medallas
+        allMedals = medData.slice(1).map(r=>({
+            id: r[0]?.trim(),
+            nombre: r[1]?.trim(),
+            rareza: r[2]?.trim(),
+            imagenURL: r[3]?.trim(),
+            descripcion: r[4]?.trim()
+        }));
 
-        const userMedalsIDs = [];
-        for (let i = 1; i < userRows.length; i++) {
-            const [username, medalID] = userRows[i];
-            if (username && medalID && username.trim().toLowerCase() === (user || '').toLowerCase()) {
-                userMedalsIDs.push(medalID.trim());
-            }
-        }
+        // Usuarios
+        allUsers = userData.slice(1).map(r=>({
+            DiscordID: r[0]?.trim(),
+            NombreUsuario: r[1]?.trim(),
+            AvatarURL: r[2]?.trim(),
+            MedallasObtenidas: r[3]?.trim()
+        }));
 
-        container.innerHTML = '';
+        // Buscar usuario
+        const user = allUsers.find(u=>u.NombreUsuario.toLowerCase() === (usernameParam||'').toLowerCase());
+        if(!user){ container.innerHTML = '<p>Usuario no encontrado.</p>'; return; }
 
-        for (let i = 1; i < medalRows.length; i++) {
-            const [id, nombre, rareza, imagenURL, descripcion] = medalRows[i];
-            if (!nombre || !imagenURL || !id) continue;
+        // Mostrar foto y nombre
+        container.innerHTML = `
+            <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
+                <img src="${user.AvatarURL}" alt="${user.NombreUsuario}" width="80" height="80" style="border-radius:50%;">
+                <h2>${user.NombreUsuario}</h2>
+            </div>
+            <h3>Medallas obtenidas:</h3>
+            <div id="userMedalsContainer" style="display:flex;flex-wrap:wrap;gap:1rem;"></div>
+        `;
 
-            if (userMedalsIDs.includes(id.trim())) {
-                const item = document.createElement('div');
-                item.classList.add('medalla');
-                if (rareza) item.classList.add(rareza.trim());
+        // Medallas del usuario
+        const medalIDs = user.MedallasObtenidas.split(',').map(m=>m.trim()).filter(Boolean);
+        const userMedals = allMedals.filter(m => medalIDs.includes(m.id))
+                                    .sort((a,b)=>rarityOrder.indexOf(a.rareza)-rarityOrder.indexOf(b.rareza));
 
-                const img = document.createElement('img');
-                img.src = fixImgurLink(imagenURL);
-                img.alt = nombre;
-                img.classList.add('medalla-img');
+        const medalsContainer = document.getElementById('userMedalsContainer');
+        if(userMedals.length===0){ medalsContainer.innerHTML='<p>No tiene medallas.</p>'; return; }
 
-                const info = document.createElement('div');
-                const title = document.createElement('strong');
-                title.textContent = nombre;
-                const desc = document.createElement('p');
-                desc.textContent = descripcion || '';
+        userMedals.forEach(m=>{
+            const div = document.createElement('div');
+            div.style.textAlign = 'center';
+            div.style.width = '120px';
+            div.innerHTML = `
+                <img src="${m.imagenURL}" alt="${m.nombre}" style="width:100px;height:100px;">
+                <p style="margin:0.5rem 0 0 0;"><strong>${m.nombre}</strong></p>
+            `;
+            medalsContainer.appendChild(div);
+        });
 
-                info.appendChild(title);
-                info.appendChild(desc);
-
-                item.appendChild(img);
-                item.appendChild(info);
-                container.appendChild(item);
-            }
-        }
-
-        if (container.innerHTML.trim() === '') {
-            container.innerHTML = '<p>Este usuario no tiene medallas.</p>';
-        }
-    }).catch(error => {
-        console.error('Error cargando perfil:', error);
-        container.innerHTML = '<p>Error cargando medallas</p>';
-    });
+    } catch(err){
+        console.error(err);
+        container.innerHTML = '<p>Error cargando perfil.</p>';
+    }
 }
