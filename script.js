@@ -1,100 +1,170 @@
-// 🔹 URLs de datos
-const MEDALS_URL = 'https://docs.google.com/spreadsheets/d/1uxeXCUyWi2kLAWEGJjZ91zutr18sr7_QjHqxfPVzgCA/export?format=csv&gid=0';
-const USERS_URL = 'https://docs.google.com/spreadsheets/d/TU_ID_HOJA/export?format=csv';
+const MEDALS_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1uxeXCUyWi2kLAWEGJjZ91zutr18sr7_QjHqxfPVzgCA/export?format=csv&gid=0';
+const USERS_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1Pri9HhHGipD08e847iUKruXPLzG9tWki3N5rQPu2cMw/export?format=csv&gid=0';
 
-// 🔹 Variables globales
 let allMedals = [];
 let allUsers = [];
-const rarityOrder = ['UR','SSR','SR','R','S'];
 
-// 🔹 Inicialización al cargar la página
 document.addEventListener('DOMContentLoaded', () => {
-    if (document.getElementById('userProfile')) loadUserProfile();
+    loadMedalsAndUsers();
 });
 
-// 🔹 Parse CSV simple
-function parseCSV(data) {
-    const rows = [];
-    const lines = data.trim().split('\n');
-    for (let line of lines) {
-        const cells = [];
-        let current='', inQuotes=false;
-        for (let char of line) {
-            if (char === '"' && !inQuotes) { inQuotes=true; continue; }
-            if (char === '"' && inQuotes) { inQuotes=false; continue; }
-            if (char === ',' && !inQuotes) { cells.push(current); current=''; continue; }
-            current+=char;
-        }
-        cells.push(current);
-        rows.push(cells);
-    }
-    return rows;
-}
-
-// 🔹 Cargar perfil de usuario
-async function loadUserProfile() {
-    const params = new URLSearchParams(window.location.search);
-    const usernameParam = params.get('user'); // nombre de usuario buscado
-    const container = document.getElementById('userProfile');
-    container.innerHTML = '<p>Cargando perfil...</p>';
-
+async function loadMedalsAndUsers() {
     try {
-        const [medRes, userRes] = await Promise.all([fetch(MEDALS_URL), fetch(USERS_URL)]);
-        const medData = parseCSV(await medRes.text());
-        const userData = parseCSV(await userRes.text());
+        const [medalsRes, usersRes] = await Promise.all([fetch(MEDALS_SHEET_URL), fetch(USERS_SHEET_URL)]);
+        const medalsText = await medalsRes.text();
+        const usersText = await usersRes.text();
 
-        // Medallas
-        allMedals = medData.slice(1).map(r=>({
+        // Parse medallas
+        const medalRows = medalsText.split('\n').map(r => r.split(','));
+        allMedals = medalRows.slice(1).map(r => ({
             id: r[0]?.trim(),
             nombre: r[1]?.trim(),
             rareza: r[2]?.trim(),
             imagenURL: r[3]?.trim(),
             descripcion: r[4]?.trim()
-        }));
+        })).filter(m => m.id && m.nombre && m.imagenURL);
 
-        // Usuarios
-        allUsers = userData.slice(1).map(r=>({
-            DiscordID: r[0]?.trim(),
-            NombreUsuario: r[1]?.trim(),
-            AvatarURL: r[2]?.trim(),
-            MedallasObtenidas: r[3]?.trim()
-        }));
+        // Parse usuarios
+        const userRows = usersText.split('\n').map(r => r.split(','));
+        allUsers = userRows.slice(1).map(r => ({
+            id: r[0]?.trim(),
+            nombre: r[1]?.trim(),
+            avatar: r[2]?.trim(),
+            medallas: r[3]?.trim().split(';').map(x => x.trim()).filter(Boolean)
+        })).filter(u => u.id && u.nombre);
 
-        // Buscar usuario
-        const user = allUsers.find(u=>u.NombreUsuario.toLowerCase() === (usernameParam||'').toLowerCase());
-        if(!user){ container.innerHTML = '<p>Usuario no encontrado.</p>'; return; }
+        if (document.getElementById('medallasList')) {
+            renderMedals(allMedals);
+            populateRarityFilter();
+            setupFilters();
+            renderTopUsers();
+        }
 
-        // Mostrar foto y nombre
-        container.innerHTML = `
-            <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
-                <img src="${user.AvatarURL}" alt="${user.NombreUsuario}" width="80" height="80" style="border-radius:50%;">
-                <h2>${user.NombreUsuario}</h2>
-            </div>
-            <h3>Medallas obtenidas:</h3>
-            <div id="userMedalsContainer" style="display:flex;flex-wrap:wrap;gap:1rem;"></div>
-        `;
+        if (document.getElementById('userMedals')) {
+            loadUserProfile();
+        }
 
-        // Medallas del usuario
-        const medalIDs = user.MedallasObtenidas.split(',').map(m=>m.trim()).filter(Boolean);
-        const userMedals = allMedals.filter(m => medalIDs.includes(m.id))
-                                    .sort((a,b)=>rarityOrder.indexOf(a.rareza)-rarityOrder.indexOf(b.rareza));
-
-        const medalsContainer = document.getElementById('userMedalsContainer');
-        if(userMedals.length===0){ medalsContainer.innerHTML='<p>No tiene medallas.</p>'; return; }
-
-        userMedals.forEach(m=>{
-            const div = document.createElement('div');
-            div.style.textAlign = 'center';
-            div.style.width = '120px';
-            div.innerHTML = `
-                <img src="${m.imagenURL}" alt="${m.nombre}" style="width:100px;height:100px;">
-                <p style="margin:0.5rem 0 0 0;"><strong>${m.nombre}</strong></p>
-            `;
-            medalsContainer.appendChild(div);
-        });
-
-    } catch(err){
-        console.error(err);
-        container.innerHTML = '<p>Error cargando perfil.</p>';
+    } catch (e) {
+        console.error('Error cargando datos:', e);
     }
+}
+
+// -------------------- Renderizar medallas --------------------
+function renderMedals(medals) {
+    const container = document.getElementById('medallasList');
+    container.innerHTML = '';
+    if (!medals.length) {
+        container.innerHTML = '<p>No se encontraron medallas.</p>';
+        return;
+    }
+
+    medals.forEach(m => {
+        const div = document.createElement('div');
+        div.classList.add('medalla', m.rareza);
+
+        div.innerHTML = `
+            <img src="${m.imagenURL}" alt="${m.nombre}" class="medalla-img">
+            <div>
+                <strong>${m.nombre}</strong>
+                <p>${m.descripcion || ''}</p>
+            </div>
+        `;
+        container.appendChild(div);
+    });
+}
+
+// -------------------- Filtros --------------------
+function populateRarityFilter() {
+    const raritySelect = document.getElementById('medalRarity');
+    const rarezas = [...new Set(allMedals.map(m => m.rareza))].sort();
+    rarezas.forEach(r => {
+        const opt = document.createElement('option');
+        opt.value = r;
+        opt.textContent = r;
+        raritySelect.appendChild(opt);
+    });
+}
+
+function setupFilters() {
+    document.getElementById('medalSearch').addEventListener('input', applyFilters);
+    document.getElementById('medalRarity').addEventListener('change', applyFilters);
+}
+
+function applyFilters() {
+    const search = document.getElementById('medalSearch').value.toLowerCase();
+    const rarity = document.getElementById('medalRarity').value;
+
+    const filtered = allMedals.filter(m =>
+        (!rarity || m.rareza === rarity) &&
+        (!search || m.nombre.toLowerCase().includes(search))
+    );
+    renderMedals(filtered);
+}
+
+// -------------------- Top 3 usuarios --------------------
+function renderTopUsers() {
+    const container = document.getElementById('topUsers');
+    container.innerHTML = '';
+
+    const sorted = allUsers.sort((a,b) => b.medallas.length - a.medallas.length).slice(0,3);
+    sorted.forEach(u => {
+        const div = document.createElement('div');
+        div.classList.add('medalla');
+        div.innerHTML = `
+            <img src="${u.avatar}" alt="${u.nombre}" class="medalla-img">
+            <div>
+                <strong>${u.nombre}</strong>
+                <p>Total medallas: ${u.medallas.length}</p>
+            </div>
+        `;
+        container.appendChild(div);
+    });
+}
+
+// -------------------- Perfil de usuario --------------------
+function loadUserProfile() {
+    const params = new URLSearchParams(window.location.search);
+    const username = params.get('user') || '';
+    const user = allUsers.find(u => u.nombre.toLowerCase() === username.toLowerCase());
+
+    if (!user) {
+        document.getElementById('username').textContent = 'Usuario no encontrado';
+        document.getElementById('userMedals').innerHTML = '';
+        return;
+    }
+
+    document.getElementById('username').textContent = user.nombre;
+    document.getElementById('userAvatar').src = user.avatar;
+
+    const medals = user.medallas
+        .map(id => allMedals.find(m => m.id === id))
+        .filter(Boolean)
+        .sort((a,b) => rarityValue(b.rareza) - rarityValue(a.rareza));
+
+    const container = document.getElementById('userMedals');
+    container.innerHTML = '';
+
+    if (!medals.length) {
+        container.innerHTML = '<p>Este usuario no tiene medallas.</p>';
+        return;
+    }
+
+    medals.forEach(m => {
+        const div = document.createElement('div');
+        div.classList.add('medalla', m.rareza);
+        div.innerHTML = `
+            <img src="${m.imagenURL}" alt="${m.nombre}" class="medalla-img">
+            <div>
+                <strong>${m.nombre}</strong>
+                <p>${m.descripcion || ''}</p>
+            </div>
+        `;
+        container.appendChild(div);
+    });
+}
+
+// -------------------- Helpers --------------------
+function rarityValue(r) {
+    const order = ['S', 'R', 'SR', 'SSR', 'UR'];
+    return order.indexOf(r) !== -1 ? order.indexOf(r) : 999;
 }
