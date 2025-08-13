@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function loadMedals() {
     // Aquí iría la carga de medallas desde Google Sheets
     const container = document.getElementById('medallasList');
-    container.innerHTML = '<p>(Ejemplo) Medalla de Prueba</p>';
+    container.innerHTML = 'https://docs.google.com/spreadsheets/d/1uxeXCUyWi2kLAWEGJjZ91zutr18sr7_QjHqxfPVzgCA/export?format=csv&gid=0';
 }
 
 function loadUserProfile() {
@@ -22,5 +22,5 @@ function loadUserProfile() {
     const user = params.get('user');
     document.getElementById('username').textContent = user || 'Usuario';
     const container = document.getElementById('userMedals');
-    container.innerHTML = '<p>(Ejemplo) Medalla del Usuario</p>';
+    container.innerHTML = 'https://docs.google.com/spreadsheets/d/1uxeXCUyWi2kLAWEGJjZ91zutr18sr7_QjHqxfPVzgCA/export?format=csv&gid=0';
 }
