@@ -64,3 +64,15 @@ input {
     height: 100px;
     object-fit: contain;
 }
+
+
+.search-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.search-container input {
+    width: 60%;
+    max-width: 400px;
+}
