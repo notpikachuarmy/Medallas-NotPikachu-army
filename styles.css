@@ -39,3 +39,28 @@ input {
 .SR { box-shadow: 0 0 10px orange; }
 .SSR { box-shadow: 0 0 10px red; }
 .UR { box-shadow: 0 0 10px purple; }
+
+/* Centrar y alinear listas de medallas (tanto globales como de usuario) */
+#medallasList,
+#userMedals {
+    display: flex;
+    flex-wrap: wrap;          /* que bajen en filas */
+    justify-content: center;  /* centrado horizontal */
+    gap: 20px;                /* espacio entre tarjetas */
+    max-width: 1000px;        /* MISMO ancho para ambos contenedores */
+    margin: 0 auto;           /* centra el bloque en la página */
+    padding: 20px 16px;       /* mismo padding para ambos */
+    box-sizing: border-box;
+}
+
+/* Si quieres que todas las tarjetas tengan el mismo ancho para que “empiecen y terminen” alineadas */
+.medalla {
+    width: 320px;             /* ajusta al gusto (260–360px suele ir bien) */
+}
+
+/* (Opcional) Imagen consistente dentro de la tarjeta */
+.medalla img {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+}
