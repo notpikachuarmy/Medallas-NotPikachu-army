@@ -1,26 +1,27 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Medallas - Lista y Buscador</title>
-    <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Medallas</title>
+<style>
+body { font-family: Arial, sans-serif; margin: 20px; }
+#medallasList, #topUsers { display: flex; flex-wrap: wrap; gap: 10px; }
+.medallaCard { border: 1px solid #ccc; border-radius: 8px; padding: 10px; width: 120px; text-align: center; }
+.medallaCard img { width: 100px; height: 100px; object-fit: contain; border-radius: 5px; }
+</style>
 </head>
 <body>
-    <header>
-        <h1>Vitrina de Medallas</h1>
-        <input type="text" id="searchUser" placeholder="Buscar usuario...">
-    </header>
 
-    <!-- Buscador de medallas centrado -->
-    <div class="search-container">
-        <input type="text" id="searchMedal" placeholder="Buscar medalla...">
-    </div>
+<h1>Medallas</h1>
 
-    <main id="medallasList">
-        <!-- Aquí se cargarán las medallas -->
-    </main>
-    
-    <script src="script.js"></script>
+<div id="filterControls"></div>
+<div id="medallasList"></div>
+
+<h2>Top 3 Usuarios</h2>
+<div id="topUsers"></div>
+
+<script src="script.js"></script>
 </body>
 </html>
 
