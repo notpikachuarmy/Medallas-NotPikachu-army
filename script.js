@@ -2,6 +2,8 @@
 const MEDALS_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1uxeXCUyWi2kLAWEGJjZ91zutr18sr7_QjHqxfPVzgCA/export?format=csv&gid=0';
 const USERS_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1Pri9HhHGipD08e847iUKruXPLzG9tWki3N5rQPu2cMw/export?format=csv&gid=0';
 
+let allMedals = []; // Para almacenar todas las medallas cargadas
+
 document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('medallasList')) {
         loadMedals();
@@ -14,19 +16,14 @@ document.addEventListener('DOMContentLoaded', () => {
 // 🔹 Función para corregir enlaces de Imgur (álbumes y galerías)
 function fixImgurLink(url) {
     url = url.trim();
-
-    // Si es un álbum o galería
     if (url.includes("imgur.com/a/") || url.includes("imgur.com/gallery/")) {
         let id = url.split("/").pop();
-        return `https://i.imgur.com/${id}.png`; // Primer imagen directa
+        return `https://i.imgur.com/${id}.png`;
     }
-
-    // Si es enlace normal de imgur
     if (url.includes("imgur.com") && !url.includes("i.imgur.com")) {
         let id = url.split("/").pop().split(".")[0];
         return `https://i.imgur.com/${id}.png`;
     }
-
     return url;
 }
 
@@ -39,34 +36,20 @@ function loadMedals() {
         .then(response => response.text())
         .then(data => {
             const rows = data.split('\n').map(row => row.split(','));
-            container.innerHTML = ''; // Limpiar
+            allMedals = rows.slice(1).map(r => ({
+                id: r[0]?.trim(),
+                nombre: r[1]?.trim(),
+                rareza: r[2]?.trim(),
+                imagenURL: fixImgurLink(r[3]?.trim()),
+                descripcion: r[4]?.trim()
+            })).filter(m => m.nombre && m.imagenURL);
 
-            for (let i = 1; i < rows.length; i++) {
-                const [id, nombre, rareza, imagenURL, descripcion] = rows[i];
-                if (!nombre || !imagenURL) continue;
+            container.innerHTML = '';
 
-                const item = document.createElement('div');
-                item.classList.add('medalla');
-                if (rareza) item.classList.add(rareza.trim());
+            // Crear buscador y filtro de rareza
+            createFilterControls();
 
-                const img = document.createElement('img');
-                img.src = fixImgurLink(imagenURL);
-                img.alt = nombre;
-                img.classList.add('medalla-img');
-
-                const info = document.createElement('div');
-                const title = document.createElement('strong');
-                title.textContent = nombre;
-                const desc = document.createElement('p');
-                desc.textContent = descripcion || '';
-
-                info.appendChild(title);
-                info.appendChild(desc);
-
-                item.appendChild(img);
-                item.appendChild(info);
-                container.appendChild(item);
-            }
+            renderMedals(allMedals);
         })
         .catch(error => {
             console.error('Error cargando medallas:', error);
@@ -74,7 +57,81 @@ function loadMedals() {
         });
 }
 
-// 🔹 Cargar perfil de usuario
+// 🔹 Crear controles de búsqueda y filtro
+function createFilterControls() {
+    const container = document.getElementById('medallasList');
+
+    const filterDiv = document.createElement('div');
+    filterDiv.style.marginBottom = '1rem';
+    filterDiv.innerHTML = `
+        <input type="text" id="medalSearch" placeholder="Buscar medalla..." style="margin-right:1rem;">
+        <select id="medalRarity">
+            <option value="">Todas las rarezas</option>
+        </select>
+    `;
+    container.parentNode.insertBefore(filterDiv, container);
+
+    const raritySet = new Set(allMedals.map(m => m.rareza).filter(Boolean));
+    const raritySelect = filterDiv.querySelector('#medalRarity');
+    raritySet.forEach(r => {
+        const option = document.createElement('option');
+        option.value = r;
+        option.textContent = r;
+        raritySelect.appendChild(option);
+    });
+
+    document.getElementById('medalSearch').addEventListener('input', applyFilters);
+    document.getElementById('medalRarity').addEventListener('change', applyFilters);
+}
+
+// 🔹 Aplicar filtros y renderizar
+function applyFilters() {
+    const search = document.getElementById('medalSearch').value.toLowerCase();
+    const rarity = document.getElementById('medalRarity').value;
+
+    const filtered = allMedals.filter(m => 
+        (!rarity || m.rareza === rarity) &&
+        (!search || m.nombre.toLowerCase().includes(search))
+    );
+
+    renderMedals(filtered);
+}
+
+// 🔹 Renderizar medallas
+function renderMedals(medals) {
+    const container = document.getElementById('medallasList');
+    container.innerHTML = '';
+    if (medals.length === 0) {
+        container.innerHTML = '<p>No se encontraron medallas.</p>';
+        return;
+    }
+
+    medals.forEach(({id, nombre, rareza, imagenURL, descripcion}) => {
+        const item = document.createElement('div');
+        item.classList.add('medalla');
+        if (rareza) item.classList.add(rareza);
+
+        const img = document.createElement('img');
+        img.src = imagenURL;
+        img.alt = nombre;
+        img.classList.add('medalla-img');
+
+        const info = document.createElement('div');
+        const title = document.createElement('strong');
+        title.textContent = nombre;
+        const desc = document.createElement('p');
+        desc.textContent = descripcion || '';
+
+        info.appendChild(title);
+        info.appendChild(desc);
+
+        item.appendChild(img);
+        item.appendChild(info);
+        container.appendChild(item);
+    });
+}
+
+// 🔹 Cargar perfil de usuario (igual que antes)
 function loadUserProfile() {
     const params = new URLSearchParams(window.location.search);
     const user = params.get('user');
@@ -98,7 +155,7 @@ function loadUserProfile() {
             }
         }
 
-        container.innerHTML = ''; // Limpiar
+        container.innerHTML = '';
 
         for (let i = 1; i < medalRows.length; i++) {
             const [id, nombre, rareza, imagenURL, descripcion] = medalRows[i];
