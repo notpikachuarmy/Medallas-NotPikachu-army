@@ -11,61 +11,85 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// 🔹 Función para corregir enlaces de Imgur
-function fixImgurLink(url) {
+// 🔹 Función para arreglar enlaces de Imgur
+async function fixImgurLink(url) {
+    url = url.trim();
+
+    // Si es un álbum o galería
+    if ((url.includes("/a/") || url.includes("/gallery/")) && !url.includes("i.imgur.com")) {
+        try {
+            // Obtener el ID del álbum
+            let albumId = url.split("/").pop();
+            // Usamos la API pública de Imgur para obtener la primera imagen
+            // Esto no requiere autenticación para la mayoría de los casos
+            let apiUrl = `https://api.imgur.com/3/album/${albumId}/images`;
+            // Client-ID público de ejemplo (puedes registrar uno para tu app si quieres)
+            let response = await fetch(apiUrl, {
+                headers: { 'Authorization': 'Client-ID 546a5a7eae564d0' }
+            });
+            let data = await response.json();
+            if (data && data.data && data.data.length > 0) {
+                return data.data[0].link; // Primera imagen del álbum
+            }
+        } catch (e) {
+            console.error("Error cargando álbum de Imgur:", e);
+            return ''; // fallback a nada
+        }
+    }
+
+    // Si ya es enlace directo
     if (url.includes("imgur.com") && !url.includes("i.imgur.com")) {
         let id = url.split("/").pop().split(".")[0];
         return `https://i.imgur.com/${id}.png`;
     }
-    return url.trim();
+
+    return url;
 }
 
 // 🔹 Cargar todas las medallas
-function loadMedals() {
+async function loadMedals() {
     const container = document.getElementById('medallasList');
     container.innerHTML = '<p>Cargando medallas...</p>';
 
-    fetch(MEDALS_SHEET_URL)
-        .then(response => response.text())
-        .then(data => {
-            const rows = data.split('\n').map(row => row.split(','));
-            container.innerHTML = ''; // Limpiar
+    try {
+        const data = await fetch(MEDALS_SHEET_URL).then(res => res.text());
+        const rows = data.split('\n').map(row => row.split(','));
+        container.innerHTML = ''; // Limpiar
 
-            for (let i = 1; i < rows.length; i++) {
-                const [id, nombre, rareza, imagenURL, descripcion] = rows[i];
-                if (!nombre || !imagenURL) continue;
+        for (let i = 1; i < rows.length; i++) {
+            const [id, nombre, rareza, imagenURL, descripcion] = rows[i];
+            if (!nombre || !imagenURL) continue;
 
-                const item = document.createElement('div');
-                item.classList.add('medalla');
-                if (rareza) item.classList.add(rareza.trim()); // Añadir clase según rareza
+            const item = document.createElement('div');
+            item.classList.add('medalla');
+            if (rareza) item.classList.add(rareza.trim());
 
-                const img = document.createElement('img');
-                img.src = fixImgurLink(imagenURL);
-                img.alt = nombre;
-                img.classList.add('medalla-img');
+            const img = document.createElement('img');
+            img.src = await fixImgurLink(imagenURL);
+            img.alt = nombre;
+            img.classList.add('medalla-img');
 
-                const info = document.createElement('div');
-                const title = document.createElement('strong');
-                title.textContent = nombre;
-                const desc = document.createElement('p');
-                desc.textContent = descripcion || '';
+            const info = document.createElement('div');
+            const title = document.createElement('strong');
+            title.textContent = nombre;
+            const desc = document.createElement('p');
+            desc.textContent = descripcion || '';
 
-                info.appendChild(title);
-                info.appendChild(desc);
+            info.appendChild(title);
+            info.appendChild(desc);
 
-                item.appendChild(img);
-                item.appendChild(info);
-                container.appendChild(item);
-            }
-        })
-        .catch(error => {
-            console.error('Error cargando medallas:', error);
-            container.innerHTML = '<p>Error cargando medallas</p>';
-        });
+            item.appendChild(img);
+            item.appendChild(info);
+            container.appendChild(item);
+        }
+    } catch (error) {
+        console.error('Error cargando medallas:', error);
+        container.innerHTML = '<p>Error cargando medallas</p>';
+    }
 }
 
 // 🔹 Cargar perfil de usuario
-function loadUserProfile() {
+async function loadUserProfile() {
     const params = new URLSearchParams(window.location.search);
     const user = params.get('user');
     document.getElementById('username').textContent = user || 'Usuario';
@@ -73,14 +97,15 @@ function loadUserProfile() {
     const container = document.getElementById('userMedals');
     container.innerHTML = '<p>Cargando medallas...</p>';
 
-    Promise.all([
-        fetch(MEDALS_SHEET_URL).then(res => res.text()),
-        fetch(USERS_SHEET_URL).then(res => res.text())
-    ]).then(([medalsData, usersData]) => {
+    try {
+        const [medalsData, usersData] = await Promise.all([
+            fetch(MEDALS_SHEET_URL).then(res => res.text()),
+            fetch(USERS_SHEET_URL).then(res => res.text())
+        ]);
+
         const medalRows = medalsData.split('\n').map(r => r.split(','));
         const userRows = usersData.split('\n').map(r => r.split(','));
 
-        // Buscar IDs de medallas del usuario
         const userMedalsIDs = [];
         for (let i = 1; i < userRows.length; i++) {
             const [username, medalID] = userRows[i];
@@ -101,7 +126,7 @@ function loadUserProfile() {
                 if (rareza) item.classList.add(rareza.trim());
 
                 const img = document.createElement('img');
-                img.src = fixImgurLink(imagenURL);
+                img.src = await fixImgurLink(imagenURL);
                 img.alt = nombre;
                 img.classList.add('medalla-img');
 
@@ -123,8 +148,8 @@ function loadUserProfile() {
         if (container.innerHTML.trim() === '') {
             container.innerHTML = '<p>Este usuario no tiene medallas.</p>';
         }
-    }).catch(error => {
+    } catch (error) {
         console.error('Error cargando perfil:', error);
         container.innerHTML = '<p>Error cargando medallas</p>';
-    });
+    }
 }
