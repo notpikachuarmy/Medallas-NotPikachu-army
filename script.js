@@ -145,7 +145,7 @@ function initProfile() {
     avatar.alt = user.NombreUsuario;
 
     const medalsList = user.MedallasObtenidas ? user.MedallasObtenidas.split(',') : [];
-    const rarityCount = {S:0,R:0,SR:0,SSR:0,UR:0};
+    const rarityCount = {N:0,R:0,SR:0,SSR:0,UR:0};
 
     medalsList.forEach(mid => {
         const med = medals.find(m => m.ID === mid);
@@ -154,7 +154,7 @@ function initProfile() {
 
     document.getElementById('totalMedals').textContent = `Medallas totales: ${medalsList.length}`;
     document.getElementById('rarityCount').innerHTML = `
-        <span class="rarity-S">S: ${rarityCount.S}</span> | 
+        <span class="rarity-S">S: ${rarityCount.N}</span> | 
         <span class="rarity-R">R: ${rarityCount.R}</span> | 
         <span class="rarity-SR">SR: ${rarityCount.SR}</span> | 
         <span class="rarity-SSR">SSR: ${rarityCount.SSR}</span> | 
