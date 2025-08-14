@@ -76,21 +76,21 @@ function generarRanking() {
 
     rankingElem.innerHTML = '';
     ranking.forEach((u, index) => {
-        // Rarezas en formato de etiquetas separadas
-        const rarityHtml = ['S','R','SR','SSR','UR'].map(r => 
-            `<span class="rarity-${r}">${r}: ${u.conteo[r]}</span>`).join(' ');
+        const rarityHtml = ['S','R','SR','SSR','UR']
+            .map(r => `<span class="rarity-${r}">${r}: ${u.conteo[r]}</span>`)
+            .join(' ');
 
         const div = document.createElement('div');
         div.classList.add('ranking-item');
         div.innerHTML = `
-            <div class="ranking-left">
-                <span class="ranking-number">${index+1}</span>
-                <img class="ranking-avatar" src="${u.AvatarURL}" alt="${u.NombreUsuario}">
+            <div class="ranking-pos">${index + 1}</div>
+            <div class="ranking-avatar">
+                <img src="${u.AvatarURL}" alt="${u.NombreUsuario}">
                 <a class="ranking-username" href="perfil.html?user=${encodeURIComponent(u.NombreUsuario)}">${u.NombreUsuario}</a>
             </div>
-            <div class="ranking-right">
+            <div class="ranking-info">
                 <strong>Total medallas: ${u.totalMedallas}</strong>
-                <div class="rarities">${rarityHtml}</div>
+                <div class="ranking-rarities">${rarityHtml}</div>
             </div>
         `;
         rankingElem.appendChild(div);
