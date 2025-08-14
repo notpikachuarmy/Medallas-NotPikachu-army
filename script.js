@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (document.getElementById('medallasList')) initIndex();
             if (document.getElementById('userMedals')) initProfile();
+            if (document.getElementById('topUsers')) renderTopUsers(); // NUEVO: Top 3
         });
 });
 
@@ -178,3 +179,32 @@ function initProfile() {
         }
     });
 }
+
+// ==== NUEVO: TOP 3 USUARIOS ====
+function renderTopUsers() {
+    const container = document.getElementById('topUsers');
+    if (!container) return;
+
+    // Ordenar usuarios por cantidad de medallas descendente
+    const sortedUsers = [...users].sort((a, b) => {
+        const countA = a.MedallasObtenidas ? a.MedallasObtenidas.split(',').length : 0;
+        const countB = b.MedallasObtenidas ? b.MedallasObtenidas.split(',').length : 0;
+        return countB - countA;
+    }).slice(0,3); // Top 3
+
+    container.innerHTML = '';
+    sortedUsers.forEach(u => {
+        const div = document.createElement('div');
+        div.classList.add('top-user');
+        div.innerHTML = `
+            <img src="${u.AvatarURL}" alt="${u.NombreUsuario}">
+            <h3>${u.NombreUsuario}</h3>
+            <p>Medallas: ${u.MedallasObtenidas ? u.MedallasObtenidas.split(',').length : 0}</p>
+        `;
+        div.addEventListener('click', () => {
+            window.location.href = `perfil.html?user=${encodeURIComponent(u.NombreUsuario)}`;
+        });
+        container.appendChild(div);
+    });
+}
+
