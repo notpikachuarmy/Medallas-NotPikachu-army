@@ -29,10 +29,24 @@
             <input type="text" id="searchUser" placeholder="Buscar usuario...">
             <div id="autocompleteList"></div>
         </div>
+
+        <div class="filters">
+            <input type="text" id="searchMedal" placeholder="Buscar medalla...">
+            <div>
+                <span class="rareza-filter"><input type="checkbox" value="S" checked> <label>S</label></span>
+                <span class="rareza-filter"><input type="checkbox" value="R" checked> <label>R</label></span>
+                <span class="rareza-filter"><input type="checkbox" value="SR" checked> <label>SR</label></span>
+                <span class="rareza-filter"><input type="checkbox" value="SSR" checked> <label>SSR</label></span>
+                <span class="rareza-filter"><input type="checkbox" value="UR" checked> <label>UR</label></span>
+            </div>
+        </div>
     </header>
+
     <main id="medallasList">
         <!-- Medallas se cargan aquí -->
     </main>
+
     <script src="script.js"></script>
 </body>
 </html>
+
