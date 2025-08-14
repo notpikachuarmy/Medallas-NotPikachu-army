@@ -1,4 +1,3 @@
-// 🔹 Enlaces a Google Sheets CSV
 const MEDALS_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1uxeXCUyWi2kLAWEGJjZ91zutr18sr7_QjHqxfPVzgCA/export?format=csv&gid=0';
 const USERS_SHEET_URL  = 'https://docs.google.com/spreadsheets/d/1Pri9HhHGipD08e847iUKruXPLzG9tWki3N5rQPu2cMw/export?format=csv&gid=0';
 
@@ -10,13 +9,11 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(([medalsData, usersData]) => {
             medals = medalsData;
             users = usersData;
-
             if (document.getElementById('medallasList')) initIndex();
             if (document.getElementById('userMedals')) initProfile();
         });
 });
 
-// ==== UTILIDAD: leer CSV ====
 async function fetchCSV(url) {
     const res = await fetch(url);
     const text = await res.text();
@@ -25,7 +22,7 @@ async function fetchCSV(url) {
     return lines.map(line => {
         const values = parseCSVLine(line);
         let obj = {};
-        headers.forEach((h, i) => obj[h.trim()] = values[i].trim());
+        headers.forEach((h,i) => obj[h.trim()] = values[i].trim());
         return obj;
     });
 }
@@ -45,7 +42,7 @@ function parseCSVLine(line) {
     return result;
 }
 
-// ==== INDEX.HTML ====
+// ===== INDEX =====
 function initIndex() {
     const searchUserInput = document.getElementById('searchUser');
     const searchMedalInput = document.getElementById('searchMedal');
@@ -54,32 +51,29 @@ function initIndex() {
     const autocompleteList = document.getElementById('autocompleteList');
     const topUsersContainer = document.getElementById('topUsers');
 
-    // --- Render Top 3 usuarios con más medallas ---
-    const top3 = users.map(u => ({
-        ...u,
-        medCount: u.MedallasObtenidas ? u.MedallasObtenidas.split(',').length : 0
-    })).sort((a,b)=>b.medCount-a.medCount).slice(0,3);
+    const top3 = users.map(u => ({ ...u, medCount: u.MedallasObtenidas ? u.MedallasObtenidas.split(',').length : 0 }))
+                     .sort((a,b)=>b.medCount-a.medCount)
+                     .slice(0,3);
 
     topUsersContainer.innerHTML = '<h2>Top 3 Usuarios con más medallas</h2>' +
-        '<div style="display:flex; justify-content:center; gap:20px;">' +
-        top3.map((u, i) => `
-            <div style="background:#1e1e1e; padding:15px; border-radius:10px; width:180px;">
-                <p style="font-size:1.2rem; font-weight:bold;">#${i+1}</p>
-                <img src="${u.AvatarURL}" alt="${u.NombreUsuario}" style="width:100px; height:100px; border-radius:50%; margin-bottom:5px;">
-                <p style="font-size:1.1rem;">${u.NombreUsuario}</p>
-                <p style="font-size:1rem;">Medallas: ${u.medCount}</p>
+        '<div class="top3-container">' +
+        top3.map((u,i)=>`
+            <div class="top-user">
+                <p class="rank">#${i+1}</p>
+                <img src="${u.AvatarURL}" alt="${u.NombreUsuario}">
+                <p class="username">${u.NombreUsuario}</p>
+                <p class="medcount">Medallas: ${u.medCount}</p>
             </div>
         `).join('') +
         '</div>';
 
-    // --- Filtrado y render medallas ---
     function renderMedals() {
         const searchUser = searchUserInput.value.toLowerCase();
         const searchMedal = searchMedalInput.value.toLowerCase();
         const selectedRarezas = Array.from(rarezaCheckboxes).filter(cb=>cb.checked).map(cb=>cb.value);
 
         let filtered = medals.filter(m => 
-            (m.NombreMedalla.toLowerCase().includes(searchMedal)) &&
+            m.NombreMedalla.toLowerCase().includes(searchMedal) &&
             selectedRarezas.includes(m.Rareza)
         );
 
@@ -103,11 +97,8 @@ function initIndex() {
         matches.forEach(u => {
             const div = document.createElement('div');
             div.textContent = u.NombreUsuario;
-            div.style.padding = '5px';
-            div.style.cursor = 'pointer';
-            div.addEventListener('click', ()=> {
-                window.location.href = `perfil.html?user=${u.NombreUsuario}`;
-            });
+            div.className = 'autocomplete-item';
+            div.addEventListener('click', ()=> window.location.href = `perfil.html?user=${u.NombreUsuario}`);
             autocompleteList.appendChild(div);
         });
     });
@@ -118,7 +109,7 @@ function initIndex() {
     renderMedals();
 }
 
-// ==== PERFIL.HTML ====
+// ===== PERFIL =====
 function initProfile() {
     const urlParams = new URLSearchParams(window.location.search);
     const username = urlParams.get('user');
@@ -156,4 +147,5 @@ function initProfile() {
         `;
     }).join('');
 }
+
 
