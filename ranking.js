@@ -1,71 +1,91 @@
+// 🔹 Enlaces a Google Sheets CSV
 const MEDALS_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1uxeXCUyWi2kLAWEGJjZ91zutr18sr7_QjHqxfPVzgCA/export?format=csv&gid=0';
 const USERS_SHEET_URL  = 'https://docs.google.com/spreadsheets/d/1Pri9HhHGipD08e847iUKruXPLzG9tWki3N5rQPu2cMw/export?format=csv&gid=0';
 
-async function cargarCSV(url) {
-    const resp = await fetch(url);
-    const texto = await resp.text();
-    const filas = texto.trim().split("\n").map(f => f.split(","));
-    const headers = filas.shift();
-    return filas.map(f => Object.fromEntries(headers.map((h, i) => [h.trim(), f[i] ? f[i].trim() : ""])));
+let medals = [];
+let users = [];
+
+document.addEventListener('DOMContentLoaded', () => {
+    Promise.all([fetchCSV(MEDALS_SHEET_URL), fetchCSV(USERS_SHEET_URL)])
+        .then(([medalsData, usersData]) => {
+            medals = medalsData;
+            users = usersData;
+            generarRanking();
+        });
+});
+
+// ==== UTILIDAD: leer CSV ====
+async function fetchCSV(url) {
+    const res = await fetch(url);
+    const text = await res.text();
+    const lines = text.split('\n').filter(l => l.trim() !== '');
+    const headers = lines.shift().split(',');
+    return lines.map(line => {
+        const values = parseCSVLine(line);
+        let obj = {};
+        headers.forEach((h, i) => obj[h.trim()] = values[i] ? values[i].trim() : '');
+        return obj;
+    });
 }
 
-async function generarRanking() {
-    const medallas = await cargarCSV(MEDALS_SHEET_URL);
-    const usuarios = await cargarCSV(USERS_SHEET_URL);
+function parseCSVLine(line) {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+    for (let char of line) {
+        if (char === '"') inQuotes = !inQuotes;
+        else if (char === ',' && !inQuotes) {
+            result.push(current);
+            current = '';
+        } else current += char;
+    }
+    result.push(current);
+    return result;
+}
 
-    const puntosPorRareza = { "S": 1, "R": 2, "SR": 3, "SSR": 4, "UR": 5 };
+// ==== GENERAR RANKING ====
+function generarRanking() {
+    const rankingElem = document.getElementById('rankingList');
+    if(!rankingElem) return;
 
-    let ranking = usuarios.map(usuario => {
-        let medallasIds = usuario.MedallasObtenidas ? usuario.MedallasObtenidas.split(",") : [];
-        let conteoRarezas = { S: 0, R: 0, SR: 0, SSR: 0, UR: 0 };
-        let puntos = 0;
+    // Procesar usuarios con conteo de rarezas
+    const ranking = users.map(u => {
+        const medallasIds = u.MedallasObtenidas ? u.MedallasObtenidas.split(',').map(id=>id.trim()) : [];
+        const conteo = {S:0,R:0,SR:0,SSR:0,UR:0};
+        let total = 0;
 
-        medallasIds.forEach(id => {
-            let medalla = medallas.find(m => m.ID.trim().toLowerCase() === id.trim().toLowerCase());
-            if (medalla) {
-                conteoRarezas[medalla.Rareza] = (conteoRarezas[medalla.Rareza] || 0) + 1;
-                puntos += puntosPorRareza[medalla.Rareza] || 0;
+        medallasIds.forEach(mid => {
+            const med = medals.find(m => m.ID === mid);
+            if(med){
+                const rareza = med.Rareza.trim().toUpperCase();
+                if(conteo.hasOwnProperty(rareza)){
+                    conteo[rareza]++;
+                    total++;
+                }
             }
         });
 
-        return {
-            nombre: usuario.NombreUsuario,
-            avatar: usuario.AvatarURL,
-            conteo: conteoRarezas,
-            total: medallasIds.length,
-            puntos: puntos
-        };
+        return {...u, total, conteo};
     });
 
-    ranking.sort((a, b) => {
-        if (b.puntos !== a.puntos) return b.puntos - a.puntos;
-        return a.nombre.localeCompare(b.nombre);
-    });
+    // Ordenar por total de medallas (desc) y nombre
+    ranking.sort((a,b) => b.total - a.total || a.NombreUsuario.localeCompare(b.NombreUsuario));
 
-    const contenedor = document.getElementById("rankingList");
-    ranking.forEach((usuario, index) => {
-        let div = document.createElement("div");
-        div.className = "ranking-item";
+    // Renderizar
+    rankingElem.innerHTML = '';
+    ranking.forEach((u, index) => {
+        // Aplicar color a todo el "S: 0 | R: 0" completo
+        const rarityHtml = ['S','R','SR','SSR','UR'].map(r => 
+            `<span class="rarity-${r}">${r}: ${u.conteo[r]}</span>`).join(' | ');
+
+        const div = document.createElement('div');
+        div.classList.add('ranking-item');
         div.innerHTML = `
-            <div class="ranking-pos">${index + 1}</div>
-            <div class="ranking-avatar">
-                <img src="${usuario.avatar}" alt="${usuario.nombre}">
-                <a href="perfil.html?usuario=${encodeURIComponent(usuario.nombre)}">${usuario.nombre}</a>
-            </div>
-            <div class="ranking-info">
-                <strong>Total medallas: ${usuario.total}</strong>
-                <span>
-                    S: <span class="rarity-S">${usuario.conteo.S}</span> | 
-                    R: <span class="rarity-R">${usuario.conteo.R}</span> | 
-                    SR: <span class="rarity-SR">${usuario.conteo.SR}</span> | 
-                    SSR: <span class="rarity-SSR">${usuario.conteo.SSR}</span> | 
-                    UR: <span class="rarity-UR">${usuario.conteo.UR}</span>
-                </span>
-            </div>
+            <h3>${index+1} - ${u.NombreUsuario}</h3>
+            <strong>Total medallas: ${u.total}</strong><br>
+            ${rarityHtml}
         `;
-        contenedor.appendChild(div);
+        rankingElem.appendChild(div);
     });
 }
-
-generarRanking();
 
