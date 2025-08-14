@@ -156,7 +156,11 @@ function initProfile() {
 
     document.getElementById('totalMedals').textContent = `Medallas totales: ${medalsList.length}`;
     document.getElementById('rarityCount').innerHTML = `
-        S: ${rarityCount.S} | R: ${rarityCount.R} | SR: ${rarityCount.SR} | SSR: ${rarityCount.SSR} | UR: ${rarityCount.UR}
+        <span class="rarity-S">S: ${rarityCount.S}</span> | 
+        <span class="rarity-R">R: ${rarityCount.R}</span> | 
+        <span class="rarity-SR">SR: ${rarityCount.SR}</span> | 
+        <span class="rarity-SSR">SSR: ${rarityCount.SSR}</span> | 
+        <span class="rarity-UR">UR: ${rarityCount.UR}</span>
     `;
 
     // Renderizar medallas del usuario
@@ -177,4 +181,3 @@ function initProfile() {
         }
     });
 }
-
