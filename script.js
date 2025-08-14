@@ -53,7 +53,7 @@ function initIndex() {
     const rarezaCheckboxes = document.querySelectorAll('.rareza-filter input');
     const autocompleteList = document.getElementById('autocompleteList');
 
-    // --- Autocomplete de usuarios ---
+    // --- Autocomplete de usuarios y navegación a perfil ---
     searchUserInput.addEventListener('input', () => {
         const query = searchUserInput.value.toLowerCase().trim();
         autocompleteList.innerHTML = '';
@@ -64,14 +64,22 @@ function initIndex() {
             const div = document.createElement('div');
             div.textContent = u.NombreUsuario;
             div.addEventListener('click', () => {
-                searchUserInput.value = u.NombreUsuario;
-                autocompleteList.innerHTML = '';
-                renderFiltered();
+                // Ir directamente al perfil
+                window.location.href = `perfil.html?user=${encodeURIComponent(u.NombreUsuario)}`;
             });
             autocompleteList.appendChild(div);
         });
     });
 
+    // Enter → ir al perfil si coincide exacto
+    searchUserInput.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+            const user = users.find(u => u.NombreUsuario.toLowerCase() === searchUserInput.value.toLowerCase());
+            if (user) window.location.href = `perfil.html?user=${encodeURIComponent(user.NombreUsuario)}`;
+        }
+    });
+
+    // Cerrar autocomplete al hacer click fuera
     document.addEventListener('click', e => {
         if (!searchUserInput.contains(e.target)) autocompleteList.innerHTML = '';
     });
