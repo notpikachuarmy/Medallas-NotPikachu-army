@@ -127,55 +127,78 @@ input {
     margin: 3px 0;
 }
 
-/* ==== RANKING DE USUARIOS ==== */
+/* ==== RANKING DE USUARIOS ESTILO TARJETA ==== */
 #rankingList {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .ranking-item {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 60px 140px 1fr;
     align-items: center;
-    padding: 6px 10px;
-    border-bottom: 1px solid #444;
+    background-color: #1e1e1e;
+    padding: 10px 15px;
+    border-radius: 10px;
+    box-sizing: border-box;
+    gap: 15px;
+}
+
+.ranking-number {
+    font-size: 2rem;
+    font-weight: bold;
+    text-align: center;
 }
 
 .ranking-left {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 10px;
-}
-
-.ranking-number {
-    font-weight: bold;
+    text-align: center;
 }
 
 .ranking-avatar {
-    width: 40px;
-    height: 40px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
+    margin-bottom: 6px;
+    box-shadow: 0 0 10px #fff;
 }
 
 .ranking-username {
     color: #fff;
     text-decoration: none;
+    font-weight: bold;
 }
 
 .ranking-username:hover {
     text-decoration: underline;
 }
 
-.ranking-right span {
-    margin-right: 5px;
+.ranking-right {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
-/* Colores de rareza (coinciden con perfil) */
+.ranking-right strong {
+    margin-bottom: 5px;
+    font-size: 1rem;
+}
+
+.ranking-right .rarities {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Colores de rareza */
 .rarity-S   { color: white; }
 .rarity-R   { color: yellow; }
 .rarity-SR  { color: orange; }
 .rarity-SSR { color: red; }
 .rarity-UR  { color: purple; }
-
-
