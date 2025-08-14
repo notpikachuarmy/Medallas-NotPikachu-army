@@ -11,12 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
             medals = medalsData;
             users = usersData;
 
-            if (document.getElementById('medallasList')) {
-                initIndex();
-            }
-            if (document.getElementById('userMedals')) {
-                initProfile();
-            }
+            if (document.getElementById('medallasList')) initIndex();
+            if (document.getElementById('userMedals')) initProfile();
         });
 });
 
@@ -34,13 +30,12 @@ async function fetchCSV(url) {
     });
 }
 
-// Soporta comas dentro de comillas
 function parseCSVLine(line) {
     const result = [];
     let current = '';
     let inQuotes = false;
     for (let char of line) {
-        if (char === '"' ) inQuotes = !inQuotes;
+        if (char === '"') inQuotes = !inQuotes;
         else if (char === ',' && !inQuotes) {
             result.push(current);
             current = '';
@@ -53,42 +48,54 @@ function parseCSVLine(line) {
 // ==== INDEX.HTML ====
 function initIndex() {
     const searchUserInput = document.getElementById('searchUser');
-    const searchMedalInput = document.createElement('input');
-    searchMedalInput.type = 'text';
-    searchMedalInput.placeholder = 'Buscar medalla...';
-    searchMedalInput.id = 'searchMedal';
-    searchMedalInput.style.marginTop = '10px';
-
+    const searchMedalInput = document.getElementById('searchMedal');
     const medallasList = document.getElementById('medallasList');
-    medallasList.parentNode.insertBefore(searchMedalInput, medallasList);
+    const rarezaCheckboxes = document.querySelectorAll('.rareza-filter input');
 
-    // Filtros rareza
-    const filtersDiv = document.createElement('div');
-    filtersDiv.classList.add('filters');
-    ['S','R','SR','SSR','UR'].forEach(r => {
-        const label = document.createElement('label');
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.value = r;
-        checkbox.checked = true;
-        checkbox.classList.add('rareza-filter');
-        label.appendChild(checkbox);
-        label.append(r);
-        filtersDiv.appendChild(label);
+    // Autocomplete de usuarios
+    const autocompleteList = document.getElementById('autocompleteList');
+    searchUserInput.addEventListener('input', () => {
+        const query = searchUserInput.value.toLowerCase().trim();
+        autocompleteList.innerHTML = '';
+        if (!query) return;
+
+        const matches = users.filter(u => u.NombreUsuario.toLowerCase().includes(query));
+        matches.forEach(u => {
+            const div = document.createElement('div');
+            div.textContent = u.NombreUsuario;
+            div.addEventListener('click', () => {
+                searchUserInput.value = u.NombreUsuario;
+                autocompleteList.innerHTML = '';
+                renderFiltered();
+            });
+            autocompleteList.appendChild(div);
+        });
     });
-    medallasList.parentNode.insertBefore(filtersDiv, medallasList);
+
+    document.addEventListener('click', e => {
+        if (!searchUserInput.contains(e.target)) autocompleteList.innerHTML = '';
+    });
 
     function renderFiltered() {
         const userQuery = searchUserInput.value.trim().toLowerCase();
         const medalQuery = searchMedalInput.value.trim().toLowerCase();
-        const checkedRarezas = Array.from(document.querySelectorAll('.rareza-filter'))
+        const checkedRarezas = Array.from(rarezaCheckboxes)
                                     .filter(c => c.checked).map(c => c.value);
 
-        const filteredMedals = medals.filter(m => {
+        let filteredMedals = medals.filter(m => {
             const matchesMedal = m.Nombre.toLowerCase().includes(medalQuery);
             const matchesRareza = checkedRarezas.includes(m.Rareza);
             return matchesMedal && matchesRareza;
         });
+
+        // Si hay usuario, filtrar solo medallas que tenga
+        if (userQuery) {
+            const user = users.find(u => u.NombreUsuario.toLowerCase() === userQuery);
+            if (user) {
+                const userMedals = user.MedallasObtenidas ? user.MedallasObtenidas.split(',') : [];
+                filteredMedals = filteredMedals.filter(m => userMedals.includes(m.ID));
+            }
+        }
 
         medallasList.innerHTML = '';
         filteredMedals.forEach(m => {
@@ -107,7 +114,7 @@ function initIndex() {
 
     searchUserInput.addEventListener('input', renderFiltered);
     searchMedalInput.addEventListener('input', renderFiltered);
-    document.querySelectorAll('.rareza-filter').forEach(cb => cb.addEventListener('change', renderFiltered));
+    rarezaCheckboxes.forEach(cb => cb.addEventListener('change', renderFiltered));
 
     renderFiltered();
 }
@@ -185,3 +192,4 @@ function initProfile() {
         }
     });
 }
+
