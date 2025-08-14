@@ -80,34 +80,49 @@ input {
 /* Controles de filtros/buscadores */
 .filters {
     margin: 15px 0;
-    text-align: center;
 }
 
 .filters input[type="text"] {
     padding: 0.5rem;
     width: 60%;
-    margin-bottom: 10px;
+    margin: 5px 0;
     border-radius: 5px;
     border: none;
 }
 
-.filters .rareza-filter {
-    display: inline-block;
-    margin: 5px;
-}
-
-.filters label {
-    margin-left: 5px;
-    user-select: none;
-}
-
 /* PERFIL: avatar y stats más grandes */
+#profileHeader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px 0;
+}
+
 #avatar {
-    width: 120px;
-    height: 120px;
+    width: 180px;
+    height: 180px;
     border-radius: 50%;
     display: block;
-    margin: 0 auto 10px;
+    margin: 20px auto 10px;
+    box-shadow: 0 0 15px #fff;
+}
+
+#totalMedals, #rarityCount {
+    text-align: center;
+    font-size: 1.5rem;
+    margin: 10px 0;
+}
+
+#rarityCount span {
+    margin: 0 10px;
+    font-weight: bold;
+    font-size: 1.4rem;
+}
+
+/* Top 3 usuarios */
+#topUsers h2 {
+    font-size: 2rem;
+    margin-bottom: 15px;
 }
 
 
