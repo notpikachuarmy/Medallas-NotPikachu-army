@@ -1,52 +1,30 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Vitrina de Medallas</title>
-    <link rel="stylesheet" href="styles.css">
-    <style>
-        #autocompleteList {
-            background: #1a1a1a;
-            position: absolute;
-            z-index: 1000;
-            width: 60%;
-            border-radius: 5px;
-            overflow: hidden;
-        }
-        #autocompleteList div {
-            padding: 0.5rem;
-            cursor: pointer;
-        }
-        #autocompleteList div:hover {
-            background: #333;
-        }
-    </style>
+<meta charset="UTF-8">
+<title>Index de Medallas</title>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <h1>Vitrina de Medallas</h1>
-        <div style="position: relative; display: inline-block; width: 60%;">
-            <input type="text" id="searchUser" placeholder="Buscar usuario...">
-            <div id="autocompleteList"></div>
-        </div>
+<header><h1>Medallas</h1></header>
 
-        <div class="filters">
-            <input type="text" id="searchMedal" placeholder="Buscar medalla...">
-            <div>
-                <span class="rareza-filter"><input type="checkbox" value="S" checked> <label>S</label></span>
-                <span class="rareza-filter"><input type="checkbox" value="R" checked> <label>R</label></span>
-                <span class="rareza-filter"><input type="checkbox" value="SR" checked> <label>SR</label></span>
-                <span class="rareza-filter"><input type="checkbox" value="SSR" checked> <label>SSR</label></span>
-                <span class="rareza-filter"><input type="checkbox" value="UR" checked> <label>UR</label></span>
-            </div>
-        </div>
-    </header>
+<div class="filters">
+    <input type="text" id="searchUser" placeholder="Buscar usuario">
+    <input type="text" id="searchMedal" placeholder="Buscar medalla">
+    <div class="rareza-filter">
+        <input type="checkbox" value="S" checked> <label>S</label>
+        <input type="checkbox" value="R" checked> <label>R</label>
+        <input type="checkbox" value="SR" checked> <label>SR</label>
+        <input type="checkbox" value="SSR" checked> <label>SSR</label>
+        <input type="checkbox" value="UR" checked> <label>UR</label>
+    </div>
+    <div id="autocompleteList" style="position:absolute;background:#222;width:60%;max-width:400px;"></div>
+</div>
 
-    <main id="medallasList">
-        <!-- Medallas se cargan aquí -->
-    </main>
+<div id="medallasList"></div>
 
-    <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
+
 
