@@ -127,4 +127,46 @@ input {
     margin: 3px 0;
 }
 
+/* ==== TOP 3 USUARIOS ==== */
+#topUsers {
+    max-width: 900px;
+    margin: 20px auto;
+    display: flex;
+    justify-content: space-around;
+    gap: 20px;
+}
+
+.topUserCard {
+    background-color: #1e1e1e;
+    border-radius: 10px;
+    padding: 15px;
+    flex: 1;
+    text-align: center;
+    box-shadow: 0 0 10px #fff;
+}
+
+.topUserCard img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+    box-shadow: 0 0 10px #fff;
+}
+
+.topUserCard h3 {
+    margin: 5px 0;
+    font-size: 1.2rem;
+}
+
+.topUserCard p {
+    margin: 0;
+    font-size: 1rem;
+}
+
+/* CONTADORES DE RAREZA EN PERFIL (opcional más grande) */
+#rarityCount span {
+    font-weight: bold;
+    margin: 0 5px;
+}
+
 
