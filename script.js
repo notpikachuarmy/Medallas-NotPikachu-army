@@ -51,9 +51,9 @@ function initIndex() {
     const searchMedalInput = document.getElementById('searchMedal');
     const medallasList = document.getElementById('medallasList');
     const rarezaCheckboxes = document.querySelectorAll('.rareza-filter input');
-
-    // Autocomplete de usuarios
     const autocompleteList = document.getElementById('autocompleteList');
+
+    // --- Autocomplete de usuarios ---
     searchUserInput.addEventListener('input', () => {
         const query = searchUserInput.value.toLowerCase().trim();
         autocompleteList.innerHTML = '';
@@ -76,6 +76,7 @@ function initIndex() {
         if (!searchUserInput.contains(e.target)) autocompleteList.innerHTML = '';
     });
 
+    // --- Renderizar medallas filtradas ---
     function renderFiltered() {
         const userQuery = searchUserInput.value.trim().toLowerCase();
         const medalQuery = searchMedalInput.value.trim().toLowerCase();
@@ -88,7 +89,6 @@ function initIndex() {
             return matchesMedal && matchesRareza;
         });
 
-        // Si hay usuario, filtrar solo medallas que tenga
         if (userQuery) {
             const user = users.find(u => u.NombreUsuario.toLowerCase() === userQuery);
             if (user) {
@@ -135,44 +135,22 @@ function initProfile() {
     usernameElem.textContent = user.NombreUsuario;
 
     // Header perfil con avatar y stats
-    const profileHeader = document.createElement('div');
-    profileHeader.id = 'profileHeader';
-    const avatar = document.createElement('img');
+    const avatar = document.getElementById('avatar');
     avatar.src = user.AvatarURL;
     avatar.alt = user.NombreUsuario;
 
     const medalsList = user.MedallasObtenidas ? user.MedallasObtenidas.split(',') : [];
+    const rarityCount = {S:0,R:0,SR:0,SSR:0,UR:0};
 
-    const statsDiv = document.createElement('div');
-    statsDiv.classList.add('stats');
-    statsDiv.innerHTML = `
-        <span>Medallas totales: ${medalsList.length}</span>
-        <span>S: 0</span>
-        <span>R: 0</span>
-        <span>SR: 0</span>
-        <span>SSR: 0</span>
-        <span>UR: 0</span>
-    `;
-
-    profileHeader.appendChild(avatar);
-    profileHeader.appendChild(statsDiv);
-    userMedalsElem.parentNode.insertBefore(profileHeader, userMedalsElem);
-
-    // Contar rarezas
-    const rarezaCount = {S:0,R:0,SR:0,SSR:0,UR:0};
     medalsList.forEach(mid => {
         const med = medals.find(m => m.ID === mid);
-        if(med) rarezaCount[med.Rareza]++;
+        if(med) rarityCount[med.Rareza]++;
     });
 
-    statsDiv.querySelectorAll('span').forEach(span => {
-        const text = span.textContent;
-        if(text.startsWith('S:')) span.textContent = `S: ${rarezaCount.S}`;
-        if(text.startsWith('R:')) span.textContent = `R: ${rarezaCount.R}`;
-        if(text.startsWith('SR:')) span.textContent = `SR: ${rarezaCount.SR}`;
-        if(text.startsWith('SSR:')) span.textContent = `SSR: ${rarezaCount.SSR}`;
-        if(text.startsWith('UR:')) span.textContent = `UR: ${rarezaCount.UR}`;
-    });
+    document.getElementById('totalMedals').textContent = `Medallas totales: ${medalsList.length}`;
+    document.getElementById('rarityCount').innerHTML = `
+        S: ${rarityCount.S} | R: ${rarityCount.R} | SR: ${rarityCount.SR} | SSR: ${rarityCount.SSR} | UR: ${rarityCount.UR}
+    `;
 
     // Renderizar medallas del usuario
     userMedalsElem.innerHTML = '';
@@ -192,4 +170,3 @@ function initProfile() {
         }
     });
 }
-
