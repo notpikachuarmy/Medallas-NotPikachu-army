@@ -48,11 +48,14 @@ function generarRanking() {
     const rankingElem = document.getElementById('rankingList');
     if(!rankingElem) return;
 
-    // Procesar usuarios con conteo de rarezas
+    // Valores internos por rareza (solo para cálculo)
+    const rarezaPuntos = {S:1, R:2, SR:3, SSR:4, UR:5};
+
     const ranking = users.map(u => {
-        const medallasIds = u.MedallasObtenidas ? u.MedallasObtenidas.split(',').map(id=>id.trim()) : [];
-        const conteo = {S:0,R:0,SR:0,SSR:0,UR:0};
-        let total = 0;
+        const medallasIds = u.MedallasObtenidas ? u.MedallasObtenidas.split(',').map(id => id.trim()) : [];
+        const conteo = {S:0, R:0, SR:0, SSR:0, UR:0};
+        let totalMedallas = 0;
+        let totalPuntos = 0;
 
         medallasIds.forEach(mid => {
             const med = medals.find(m => m.ID === mid);
@@ -60,30 +63,35 @@ function generarRanking() {
                 const rareza = med.Rareza.trim().toUpperCase();
                 if(conteo.hasOwnProperty(rareza)){
                     conteo[rareza]++;
-                    total++;
+                    totalMedallas++;
+                    totalPuntos += rarezaPuntos[rareza];
                 }
             }
         });
 
-        return {...u, total, conteo};
+        return {...u, totalMedallas, conteo, totalPuntos};
     });
 
-    // Ordenar por total de medallas (desc) y nombre
-    ranking.sort((a,b) => b.total - a.total || a.NombreUsuario.localeCompare(b.NombreUsuario));
+    // Ordenar primero por puntos descendente, luego por nombre alfabéticamente
+    ranking.sort((a, b) => b.totalPuntos - a.totalPuntos || a.NombreUsuario.localeCompare(b.NombreUsuario));
 
-    // Renderizar
     rankingElem.innerHTML = '';
     ranking.forEach((u, index) => {
-        // Aplicar color a todo el "S: 0 | R: 0" completo
         const rarityHtml = ['S','R','SR','SSR','UR'].map(r => 
             `<span class="rarity-${r}">${r}: ${u.conteo[r]}</span>`).join(' | ');
 
         const div = document.createElement('div');
         div.classList.add('ranking-item');
         div.innerHTML = `
-            <h3>${index+1} - ${u.NombreUsuario}</h3>
-            <strong>Total medallas: ${u.total}</strong><br>
-            ${rarityHtml}
+            <div class="ranking-left">
+                <span class="ranking-number">${index+1}</span>
+                <img class="ranking-avatar" src="${u.AvatarURL}" alt="${u.NombreUsuario}">
+                <a class="ranking-username" href="perfil.html?user=${encodeURIComponent(u.NombreUsuario)}">${u.NombreUsuario}</a>
+            </div>
+            <div class="ranking-right">
+                <strong>Total medallas: ${u.totalMedallas}</strong><br>
+                ${rarityHtml}
+            </div>
         `;
         rankingElem.appendChild(div);
     });
