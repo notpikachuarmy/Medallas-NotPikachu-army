@@ -19,52 +19,56 @@ input {
     border-radius: 5px;
 }
 
-.medalla {
-    display: flex;
-    align-items: center;
-    margin: 1rem;
-    background-color: #1e1e1e;
-    padding: 1rem;
-    border-radius: 10px;
-}
-
-.medalla img {
-    width: 80px;
-    height: 80px;
-    margin-right: 1rem;
-}
-
-.S { box-shadow: 0 0 10px white; }
-.R { box-shadow: 0 0 10px yellow; }
-.SR { box-shadow: 0 0 10px orange; }
-.SSR { box-shadow: 0 0 10px red; }
-.UR { box-shadow: 0 0 10px purple; }
-
-/* ==== NUEVO: Grid de medallas y filtros ==== */
+/* ==== NUEVO GRID CENTRADO Y TARJETAS RECTANGULARES ==== */
 #medallasList, #userMedals {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 15px;
-    padding: 15px;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); /* 3 columnas si cabe */
+    gap: 18px;
+    padding: 16px;
+    max-width: 1200px; /* limitar ancho máximo */
+    margin: 0 auto; /* centrar el grid */
 }
 
-/* Ajustar las tarjetas de medallas dentro del grid */
+/* Tarjeta de medalla */
 .medalla {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
+    min-height: 120px; /* más rectangular horizontal */
     background-color: #1e1e1e;
     padding: 1rem;
     border-radius: 10px;
+    box-sizing: border-box;
+    margin: 0; /* quitar margen lateral viejo */
 }
 
-/* Ajustar imágenes de medallas */
+/* Imagen de medalla */
 .medalla img {
-    width: 80px;
-    height: 80px;
+    width: 84px;
+    height: 84px;
+    flex: 0 0 auto;
     margin-right: 1rem;
 }
 
-/* Filtros y buscadores */
+/* Texto dentro de la tarjeta */
+.medalla h2 {
+    margin: 0 0 6px;
+    font-size: 1.1rem;
+}
+
+.medalla p {
+    margin: 0;
+    line-height: 1.2;
+}
+
+/* Colores de rareza */
+.S   { box-shadow: 0 0 10px white; }
+.R   { box-shadow: 0 0 10px yellow; }
+.SR  { box-shadow: 0 0 10px orange; }
+.SSR { box-shadow: 0 0 10px red; }
+.UR  { box-shadow: 0 0 10px purple; }
+
+/* Controles de filtros/buscadores */
 .filters {
     margin-top: 10px;
     text-align: center;
