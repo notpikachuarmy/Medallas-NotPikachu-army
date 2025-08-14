@@ -127,7 +127,7 @@ input {
     margin: 3px 0;
 }
 
-/* ==== RANKING DE USUARIOS ESTILO TARJETA ==== */
+/* ==== RANKING DE USUARIOS ESTILO TARJETA (NUEVO LAYOUT) ==== */
 #rankingList {
     max-width: 1200px;
     margin: 0 auto;
@@ -139,58 +139,55 @@ input {
 
 .ranking-item {
     display: grid;
-    grid-template-columns: 60px 140px 1fr;
+    grid-template-columns: 50px 100px auto;
     align-items: center;
     background-color: #1e1e1e;
-    padding: 10px 15px;
+    padding: 10px;
     border-radius: 10px;
     box-sizing: border-box;
-    gap: 15px;
+    gap: 10px;
 }
 
-.ranking-number {
-    font-size: 2rem;
+.ranking-pos {
+    font-size: 1.8rem;
     font-weight: bold;
     text-align: center;
-}
-
-.ranking-left {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
+    color: white;
 }
 
 .ranking-avatar {
+    text-align: center;
+}
+
+.ranking-avatar img {
     width: 80px;
     height: 80px;
     border-radius: 50%;
-    margin-bottom: 6px;
-    box-shadow: 0 0 10px #fff;
+    border: 2px solid #fff;
 }
 
-.ranking-username {
-    color: #fff;
+.ranking-avatar a {
+    display: block;
+    margin-top: 5px;
+    color: white;
     text-decoration: none;
     font-weight: bold;
 }
 
-.ranking-username:hover {
+.ranking-avatar a:hover {
     text-decoration: underline;
 }
 
-.ranking-right {
+.ranking-info {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    color: white;
 }
 
-.ranking-right strong {
-    margin-bottom: 5px;
-    font-size: 1rem;
-}
-
-.ranking-right .rarities {
+.ranking-rarities {
+    margin-top: 5px;
+    font-size: 0.9rem;
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
@@ -202,3 +199,6 @@ input {
 .rarity-SR  { color: orange; }
 .rarity-SSR { color: red; }
 .rarity-UR  { color: purple; }
+
+
+
