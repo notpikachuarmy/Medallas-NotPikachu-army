@@ -13,7 +13,7 @@
     <div id="topUsers"></div>
 
     <!-- Filtros de rareza debajo del Top 3 -->
-    <div class="rareza-filter-container" style="text-align:center; margin: 10px 0;">
+    <div class="rareza-filter-container">
         <input type="checkbox" value="S" checked> <label>S</label>
         <input type="checkbox" value="R" checked> <label>R</label>
         <input type="checkbox" value="SR" checked> <label>SR</label>
@@ -21,12 +21,14 @@
         <input type="checkbox" value="UR" checked> <label>UR</label>
     </div>
 
-    <div class="filters" style="text-align:center;">
-        <div style="position:relative; display:inline-block; width:60%; max-width:400px; margin:5px auto;">
+    <div class="filters">
+        <div class="search-container">
             <input type="text" id="searchUser" placeholder="Buscar usuario">
-            <div id="autocompleteList" style="position:absolute; top:100%; left:0; width:100%; background:#222; z-index:10;"></div>
+            <div id="autocompleteList"></div>
         </div>
-        <input type="text" id="searchMedal" placeholder="Buscar medalla">
+        <div class="search-container">
+            <input type="text" id="searchMedal" placeholder="Buscar medalla">
+        </div>
     </div>
 
     <div id="medallasList"></div>
