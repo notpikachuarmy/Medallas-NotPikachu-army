@@ -3,7 +3,7 @@ const MEDALS_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1uxeXCUyWi2kLAW
 const USERS_SHEET_URL  = 'https://docs.google.com/spreadsheets/d/1Pri9HhHGipD08e847iUKruXPLzG9tWki3N5rQPu2cMw/export?format=csv&gid=0';
 
 let medals = [];
-let users = [];
+let users = [];sr
 
 document.addEventListener('DOMContentLoaded', () => {
     Promise.all([fetchCSV(MEDALS_SHEET_URL), fetchCSV(USERS_SHEET_URL)])
@@ -154,7 +154,7 @@ function initProfile() {
 
     document.getElementById('totalMedals').textContent = `Medallas totales: ${medalsList.length}`;
     document.getElementById('rarityCount').innerHTML = `
-        <span class="rarity-S">S: ${rarityCount.N}</span> | 
+        <span class="rarity-N">N: ${rarityCount.N}</span> | 
         <span class="rarity-R">R: ${rarityCount.R}</span> | 
         <span class="rarity-SR">SR: ${rarityCount.SR}</span> | 
         <span class="rarity-SSR">SSR: ${rarityCount.SSR}</span> | 
