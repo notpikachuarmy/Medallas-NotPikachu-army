@@ -1,3 +1,8 @@
+// 🔹 Enlaces a Google Sheets CSV
+const MEDALS_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1uxeXCUyWi2kLAWEGJjZ91zutr18sr7_QjHqxfPVzgCA/export?format=csv&gid=0';
+const USERS_SHEET_URL  = 'https://docs.google.com/spreadsheets/d/1Pri9HhHGipD08e847iUKruXPLzG9tWki3N5rQPu2cMw/export?format=csv&gid=0';
+
+// Cargar CSV desde una URL
 async function cargarCSV(url) {
     const resp = await fetch(url);
     const texto = await resp.text();
@@ -7,12 +12,8 @@ async function cargarCSV(url) {
 }
 
 async function generarRanking() {
-    // URLs de tus CSV
-    const urlMedallas = "https://docs.google.com/spreadsheets/d/e/TU_GOOGLE_SEEDS_ID/pub?gid=0&single=true&output=csv";
-    const urlUsuarios = "https://docs.google.com/spreadsheets/d/e/TU_GOOGLE_SEEDS_ID/pub?gid=0&single=true&output=csv";
-
-    const medallas = await cargarCSV(urlMedallas);
-    const usuarios = await cargarCSV(urlUsuarios);
+    const medallas = await cargarCSV(MEDALS_SHEET_URL);
+    const usuarios = await cargarCSV(USERS_SHEET_URL);
 
     // Rareza -> puntos
     const puntosPorRareza = { "S": 1, "R": 2, "SR": 3, "SSR": 4, "UR": 5 };
@@ -46,7 +47,7 @@ async function generarRanking() {
         return a.nombre.localeCompare(b.nombre);
     });
 
-    // Renderizar
+    // Renderizar ranking en el HTML
     const contenedor = document.getElementById("rankingList");
     ranking.forEach((usuario, index) => {
         let div = document.createElement("div");
