@@ -127,4 +127,55 @@ input {
     margin: 3px 0;
 }
 
+/* ==== RANKING DE USUARIOS ==== */
+#rankingList {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.ranking-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px;
+    border-bottom: 1px solid #444;
+}
+
+.ranking-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ranking-number {
+    font-weight: bold;
+}
+
+.ranking-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.ranking-username {
+    color: #fff;
+    text-decoration: none;
+}
+
+.ranking-username:hover {
+    text-decoration: underline;
+}
+
+.ranking-right span {
+    margin-right: 5px;
+}
+
+/* Colores de rareza (coinciden con perfil) */
+.rarity-S   { color: white; }
+.rarity-R   { color: yellow; }
+.rarity-SR  { color: orange; }
+.rarity-SSR { color: red; }
+.rarity-UR  { color: purple; }
+
 
