@@ -53,6 +53,40 @@ function initIndex() {
     const rarezaCheckboxes = document.querySelectorAll('.rareza-filter input');
     const autocompleteList = document.getElementById('autocompleteList');
 
+    // --- Top 3 usuarios por medallas ---
+    const topUsersContainer = document.createElement('div');
+    topUsersContainer.id = 'topUsers';
+    topUsersContainer.style.margin = '20px auto';
+    topUsersContainer.style.maxWidth = '1200px';
+    topUsersContainer.style.textAlign = 'center';
+    document.body.insertBefore(topUsersContainer, medallasList);
+
+    renderTopUsers();
+
+    function renderTopUsers() {
+        // Calcular cantidad total de medallas de cada usuario
+        const usersWithCount = users.map(u => {
+            const medCount = u.MedallasObtenidas ? u.MedallasObtenidas.split(',').length : 0;
+            return {...u, medCount};
+        });
+
+        // Ordenar de mayor a menor
+        usersWithCount.sort((a, b) => b.medCount - a.medCount);
+
+        const top3 = usersWithCount.slice(0, 3);
+        topUsersContainer.innerHTML = '<h2>Top 3 Usuarios con más medallas</h2>' +
+            '<div style="display:flex; justify-content:center; gap:20px;">' +
+            top3.map((u, i) => `
+                <div style="background:#1e1e1e; padding:10px; border-radius:10px; width:150px;">
+                    <p>#${i+1}</p>
+                    <img src="${u.AvatarURL}" alt="${u.NombreUsuario}" style="width:80px; height:80px; border-radius:50%; margin-bottom:5px;">
+                    <p>${u.NombreUsuario}</p>
+                    <p>Medallas: ${u.medCount}</p>
+                </div>
+            `).join('') +
+            '</div>';
+    }
+
     // --- Autocomplete de usuarios ---
     searchUserInput.addEventListener('input', () => {
         const query = searchUserInput.value.toLowerCase().trim();
@@ -70,7 +104,6 @@ function initIndex() {
         });
     });
 
-    // --- Enter redirige al perfil ---
     searchUserInput.addEventListener('keydown', e => {
         if (e.key === 'Enter') {
             const user = users.find(u => u.NombreUsuario.toLowerCase() === searchUserInput.value.toLowerCase());
@@ -107,11 +140,19 @@ function initIndex() {
         filteredMedals.forEach(m => {
             const div = document.createElement('div');
             div.classList.add('medalla', m.Rareza);
+
+            // Contador de usuarios que tienen la medalla
+            const usuariosConMedalla = users.filter(u => {
+                const userMedals = u.MedallasObtenidas ? u.MedallasObtenidas.split(',') : [];
+                return userMedals.includes(m.ID);
+            });
+
             div.innerHTML = `
                 <img src="${m.ImagenURL}" alt="${m.Nombre}">
                 <div>
                     <h2>${m.Nombre}</h2>
                     <p>${m.Descripción}</p>
+                    <p>Usuarios con esta medalla: ${usuariosConMedalla.length}</p>
                 </div>
             `;
             medallasList.appendChild(div);
