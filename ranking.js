@@ -48,7 +48,6 @@ function generarRanking() {
     const rankingElem = document.getElementById('rankingList');
     if(!rankingElem) return;
 
-    // Valores internos por rareza (solo para cálculo)
     const rarezaPuntos = {S:1, R:2, SR:3, SSR:4, UR:5};
 
     const ranking = users.map(u => {
@@ -72,13 +71,14 @@ function generarRanking() {
         return {...u, totalMedallas, conteo, totalPuntos};
     });
 
-    // Ordenar primero por puntos descendente, luego por nombre alfabéticamente
+    // Ordenar por puntos y luego nombre
     ranking.sort((a, b) => b.totalPuntos - a.totalPuntos || a.NombreUsuario.localeCompare(b.NombreUsuario));
 
     rankingElem.innerHTML = '';
     ranking.forEach((u, index) => {
+        // Rarezas en formato de etiquetas separadas
         const rarityHtml = ['S','R','SR','SSR','UR'].map(r => 
-            `<span class="rarity-${r}">${r}: ${u.conteo[r]}</span>`).join(' | ');
+            `<span class="rarity-${r}">${r}: ${u.conteo[r]}</span>`).join(' ');
 
         const div = document.createElement('div');
         div.classList.add('ranking-item');
@@ -89,8 +89,8 @@ function generarRanking() {
                 <a class="ranking-username" href="perfil.html?user=${encodeURIComponent(u.NombreUsuario)}">${u.NombreUsuario}</a>
             </div>
             <div class="ranking-right">
-                <strong>Total medallas: ${u.totalMedallas}</strong><br>
-                ${rarityHtml}
+                <strong>Total medallas: ${u.totalMedallas}</strong>
+                <div class="rarities">${rarityHtml}</div>
             </div>
         `;
         rankingElem.appendChild(div);
