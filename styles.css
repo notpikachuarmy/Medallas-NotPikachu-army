@@ -127,7 +127,7 @@ input {
     margin: 3px 0;
 }
 
-/* ==== RANKING DE USUARIOS ESTILO TARJETA (NUEVO LAYOUT) ==== */
+/* ==== RANKING NUEVO LAYOUT ==== */
 #rankingList {
     max-width: 1200px;
     margin: 0 auto;
@@ -166,7 +166,7 @@ input {
     border: 2px solid #fff;
 }
 
-.ranking-avatar a {
+.ranking-username {
     display: block;
     margin-top: 5px;
     color: white;
@@ -174,7 +174,7 @@ input {
     font-weight: bold;
 }
 
-.ranking-avatar a:hover {
+.ranking-username:hover {
     text-decoration: underline;
 }
 
