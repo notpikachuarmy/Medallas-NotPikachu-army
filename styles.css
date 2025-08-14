@@ -39,3 +39,50 @@ input {
 .SR { box-shadow: 0 0 10px orange; }
 .SSR { box-shadow: 0 0 10px red; }
 .UR { box-shadow: 0 0 10px purple; }
+
+/* ==== NUEVO: Grid de medallas y filtros ==== */
+#medallasList, #userMedals {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 15px;
+    padding: 15px;
+}
+
+/* Ajustar las tarjetas de medallas dentro del grid */
+.medalla {
+    display: flex;
+    align-items: center;
+    background-color: #1e1e1e;
+    padding: 1rem;
+    border-radius: 10px;
+}
+
+/* Ajustar imágenes de medallas */
+.medalla img {
+    width: 80px;
+    height: 80px;
+    margin-right: 1rem;
+}
+
+/* Filtros y buscadores */
+.filters {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.filters input[type="text"] {
+    padding: 0.5rem;
+    width: 60%;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: none;
+}
+
+.filters .rareza-filter {
+    display: inline-block;
+    margin: 5px;
+}
+
+.filters label {
+    margin-left: 5px;
+}
