@@ -63,12 +63,19 @@ input {
     font-size: 0.95rem;
 }
 
-/* Colores de rareza */
+/* Colores de rareza (bordes de medalla) */
 .S   { box-shadow: 0 0 12px white; }
 .R   { box-shadow: 0 0 12px yellow; }
 .SR  { box-shadow: 0 0 12px orange; }
 .SSR { box-shadow: 0 0 12px red; }
 .UR  { box-shadow: 0 0 12px purple; }
+
+/* Clases para contador de rareza (letras con mismo color) */
+.rarity-S   { color: white; }
+.rarity-R   { color: yellow; }
+.rarity-SR  { color: orange; }
+.rarity-SSR { color: red; }
+.rarity-UR  { color: purple; }
 
 /* Controles de filtros/buscadores */
 .filters {
@@ -119,3 +126,4 @@ input {
     display: block;
     margin: 3px 0;
 }
+
