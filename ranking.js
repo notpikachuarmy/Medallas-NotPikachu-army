@@ -48,11 +48,11 @@ function generarRanking() {
     const rankingElem = document.getElementById('rankingList');
     if(!rankingElem) return;
 
-    const rarezaPuntos = {S:1, R:2, SR:3, SSR:4, UR:5};
+    const rarezaPuntos = {N:1, R:2, SR:3, SSR:4, UR:5};
 
     const ranking = users.map(u => {
         const medallasIds = u.MedallasObtenidas ? u.MedallasObtenidas.split(',').map(id => id.trim()) : [];
-        const conteo = {S:0, R:0, SR:0, SSR:0, UR:0};
+        const conteo = {N:0, R:0, SR:0, SSR:0, UR:0};
         let totalMedallas = 0;
         let totalPuntos = 0;
 
@@ -76,7 +76,7 @@ function generarRanking() {
 
     rankingElem.innerHTML = '';
     ranking.forEach((u, index) => {
-        const rarityHtml = ['S','R','SR','SSR','UR']
+        const rarityHtml = ['N','R','SR','SSR','UR']
             .map(r => `<span class="rarity-${r}">${r}: ${u.conteo[r]}</span>`)
             .join(' ');
 
