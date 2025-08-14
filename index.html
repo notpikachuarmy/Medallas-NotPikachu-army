@@ -20,6 +20,21 @@
         #autocompleteList div:hover {
             background: #333;
         }
+        /* Estilo del botón de Ranking */
+        .ranking-button {
+            margin-left: 10px;
+            padding: 5px 12px;
+            background-color: gold;
+            color: black;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .ranking-button:hover {
+            background-color: orange;
+        }
     </style>
 </head>
 <body>
@@ -29,6 +44,9 @@
             <input type="text" id="searchUser" placeholder="Buscar usuario...">
             <div id="autocompleteList"></div>
         </div>
+
+        <!-- Botón Ranking -->
+        <a href="ranking.html" class="ranking-button">🏆 Ranking</a>
 
         <div class="filters">
             <input type="text" id="searchMedal" placeholder="Buscar medalla...">
@@ -49,4 +67,5 @@
     <script src="script.js"></script>
 </body>
 </html>
+
 
