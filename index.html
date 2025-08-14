@@ -20,6 +20,19 @@
         #autocompleteList div:hover {
             background: #333;
         }
+        #topUsers {
+            display: flex;
+            justify-content: space-around;
+            margin: 1rem 0;
+        }
+        .topUser {
+            text-align: center;
+        }
+        .topUser img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+        }
     </style>
 </head>
 <body>
@@ -41,6 +54,9 @@
             </div>
         </div>
     </header>
+
+    <!-- TOP 3 USUARIOS: ahora encima de la lista -->
+    <section id="topUsers"></section>
 
     <main id="medallasList">
         <!-- Medallas se cargan aquí -->
