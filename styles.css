@@ -102,29 +102,12 @@ input {
 }
 
 /* PERFIL: avatar y stats más grandes */
-#profileHeader {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 20px 0;
-}
-
-#profileHeader img {
-    width: 140px;
-    height: 140px;
+#avatar {
+    width: 120px;
+    height: 120px;
     border-radius: 50%;
-    margin-bottom: 15px;
-    box-shadow: 0 0 15px #fff;
-}
-
-#profileHeader .stats {
-    font-size: 1.1rem;
-    text-align: center;
-}
-
-#profileHeader .stats span {
     display: block;
-    margin: 3px 0;
+    margin: 0 auto 10px;
 }
 
 
