@@ -26,8 +26,8 @@ input {
     gap: 20px;
     padding: 20px;
     max-width: 1200px;
-    margin: 0 auto; /* centra el grid */
-    justify-items: center; /* centra los items dentro de cada columna */
+    margin: 0 auto;
+    justify-items: center;
 }
 
 /* Tarjeta de medalla */
@@ -35,7 +35,7 @@ input {
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    width: 100%; /* ocupa todo el espacio de la columna */
+    width: 100%;
     min-height: 120px;
     background-color: #1e1e1e;
     padding: 1rem;
@@ -63,14 +63,14 @@ input {
     font-size: 0.95rem;
 }
 
-/* Colores de rareza (bordes de medalla) */
+/* Colores de rareza para bordes de medallas */
 .S   { box-shadow: 0 0 12px white; }
 .R   { box-shadow: 0 0 12px yellow; }
 .SR  { box-shadow: 0 0 12px orange; }
 .SSR { box-shadow: 0 0 12px red; }
 .UR  { box-shadow: 0 0 12px purple; }
 
-/* Clases para contador de rareza (letras con mismo color) */
+/* Colores de rareza para letras en perfil */
 .rarity-S   { color: white; }
 .rarity-R   { color: yellow; }
 .rarity-SR  { color: orange; }
@@ -126,4 +126,5 @@ input {
     display: block;
     margin: 3px 0;
 }
+
 
