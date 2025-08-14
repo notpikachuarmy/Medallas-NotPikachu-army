@@ -64,7 +64,6 @@ function initIndex() {
             const div = document.createElement('div');
             div.textContent = u.NombreUsuario;
             div.addEventListener('click', () => {
-                // Redirigir al perfil
                 window.location.href = `perfil.html?user=${encodeURIComponent(u.NombreUsuario)}`;
             });
             autocompleteList.appendChild(div);
@@ -141,7 +140,6 @@ function initProfile() {
 
     usernameElem.textContent = user.NombreUsuario;
 
-    // Header perfil con avatar y stats
     const avatar = document.getElementById('avatar');
     avatar.src = user.AvatarURL;
     avatar.alt = user.NombreUsuario;
@@ -163,7 +161,6 @@ function initProfile() {
         <span class="rarity-UR">UR: ${rarityCount.UR}</span>
     `;
 
-    // Renderizar medallas del usuario
     userMedalsElem.innerHTML = '';
     medalsList.forEach(mid => {
         const med = medals.find(m => m.ID === mid);
